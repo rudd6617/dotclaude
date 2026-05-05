@@ -1,14 +1,21 @@
 # Tech Stack
 
-- **Runtime**: TypeScript (strict) + Vite 8 dev server/bundler
-- **Framework**: Phaser 3 (game engine)
-- **Target**: ES2020, browser
+<!-- 模板：請依專案填寫；若無特殊技術棧可刪除此檔 -->
 
-# Commands
+## Runtime
+（例：Node.js 22 / Python 3.12 / Go 1.23）
+
+## Framework
+（例：Next.js 15 / FastAPI / Echo）
+
+## 主要依賴
+（列關鍵第三方庫與版本）
+
+## Commands
 
 | 用途 | 指令 |
 |------|------|
-| 開發 | `npm run dev` |
-| 型別檢查 | `tsc --noEmit` |
-| 建置 | `npm run build` (tsc + vite build) |
-| 預覽 | `npm run preview` |
+| 開發 |  |
+| 測試 |  |
+| 型別檢查 |  |
+| 建置 |  |

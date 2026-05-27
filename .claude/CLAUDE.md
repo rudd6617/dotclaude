@@ -26,6 +26,7 @@
 | `.claude/CLAUDE.md` | 行為規則、原則、流程指引 | 規則改變時 |
 | `CONTEXT.md` | 領域語言（術語、概念邊界、bounded contexts） | 第二次需要對齊術語時建立；解析新術語時即時更新 |
 | `docs/adr/NNNN-*.md` | 架構決策（為什麼選 X 而非 Y） | 三條件全成立時建（見 ADR 機制段） |
+| `.out-of-scope/*.md` | 明確拒絕的提議（為什麼不做 X） | 同樣的提議可能再被提出時 |
 | `.claude/lessons/*.md` | 重複出現的失敗模式 / 學到的教訓 | 被糾正且推測會再犯時 |
 
 ADR vs lessons：
@@ -36,19 +37,23 @@ ADR vs lessons：
 
 | Skill | 時機 | 用法 |
 |---|---|---|
+| `/zoom-out` | 進入陌生模組前 | 建立全域視角（角色/邊界/數據流） |
 | `/grill` | 需求模糊、動工前 | 逐個 branch 質問對齊 |
 | `/grill-with-docs` | 需求模糊 + 涉及領域 / 想留決策紀錄 | grill + CONTEXT/ADR 維護 |
 | `/plan` | 需求已對齊 + 涉及架構選擇 | 收斂為四段方案 |
 | `/diagnose` | bug / 異常行為 / 測試失敗 / 效能退化 | 6 階段除錯 |
 | `/review` | 完工後 / 讀不熟代碼 | 4 段品質評估 |
 | `/deepen` | codebase 級架構回顧 | 找深化機會 |
+| `/handoff` | 長對話收尾 / context 壓縮前 | 壓成交接文件存到 $TMPDIR |
 
 典型流程：
+- 陌生代碼：`/zoom-out` → 後續
 - 簡單需求：直接做
 - 中等：`/grill` → 動工 → `/review`
 - 複雜：`/grill-with-docs` → `/plan` → 動工 → `/review`
 - 出 bug：`/diagnose`
 - 中後期回顧：`/deepen`
+- 對話收尾：`/handoff`
 
 ## ADR 機制
 

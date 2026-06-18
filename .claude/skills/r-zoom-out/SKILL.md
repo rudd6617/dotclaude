@@ -1,5 +1,5 @@
 ---
-name: zoom-out
+name: r-zoom-out
 description: |
   Build a higher-level map of unfamiliar code before diving in.
   Show modules, callers, data flow using the project's domain vocabulary.
@@ -10,7 +10,7 @@ argument-hint: "[file, directory, or module name]"
 
 Zoom out on: $ARGUMENTS
 
-我不熟這塊代碼。**上升一層抽象**，畫一張地圖：相關 module、呼叫者、數據流——用專案的領域詞彙（若存在 `CONTEXT.md` 先讀過）。
+我不熟這塊代碼。**上升一層抽象**，畫一張地圖：相關 module、呼叫者、數據流——用專案的領域詞彙（若 `.claude/Wiki.md` 術語段有內容先讀過）。
 
 ## 不做什麼
 
@@ -29,4 +29,4 @@ Zoom out on: $ARGUMENTS
 
 ## 輸出
 
-5–8 句話的總結 + 一個未解問題。給用戶確認後再進入 `/grill` / `/plan` / 動工。
+5–8 句話的總結 + 一個未解問題。給用戶確認後再進入 `/r-grill` / `/r-plan` / 動工。

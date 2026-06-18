@@ -1,9 +1,9 @@
 ---
-name: grill
+name: r-grill
 description: |
   Pre-implementation alignment via relentless interview.
   Walk down the design tree, resolving ambiguities one at a time.
-  Use when requirements are fuzzy or before any non-trivial /plan.
+  Use when requirements are fuzzy or before any non-trivial /r-plan.
 disable-model-invocation: true
 argument-hint: "[need or feature description]"
 ---
@@ -25,6 +25,6 @@ Grill: $ARGUMENTS
 
 當你能用一段話總結需求且不剩疑問點時。把總結給用戶確認再離開 grill。
 
-## 與 /plan 的銜接
+## 與 /r-plan 的銜接
 
-grill 結束後，若需求複雜到需要架構選擇，呼叫 `/plan` 進入收斂。簡單變更可直接動工。
+grill 結束後，若需求複雜到需要架構選擇，呼叫 `/r-plan` 進入收斂。簡單變更可直接動工。

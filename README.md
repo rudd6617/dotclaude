@@ -1,32 +1,36 @@
 # my-claude
 
-Personal Claude Code template — development principles, custom skills, hooks, ADR/CONTEXT scaffolding, and a self-improvement loop.
+Personal Claude Code template — development principles, custom skills, hooks, ADR scaffolding, and a self-improvement loop.
 
 ## What's in here
 
 ```
 .
-├── CONTEXT.md                    # Domain glossary (fill per-project)
 ├── docs/
 │   ├── ADR-FORMAT.md             # ADR template
 │   └── adr/
 │       └── README.md             # When to write an ADR (three conditions)
+├── .out-of-scope/                # Rejected proposals (why NOT to do X)
 └── .claude/
     ├── CLAUDE.md                 # Principles, file/skill mapping, workflow
-    ├── stack.md                  # Tech stack (fill per-project)
-    ├── settings.json             # Hooks (SessionStart lesson injection)
+    ├── Wiki.md                   # Long-term knowledge: background, stack, dirs, API, glossary
+    ├── Memory.md                 # Volatile session state — where to pick up (gitignored)
+    ├── Learning.md               # Accumulated mistakes & lessons (auto-injected)
+    ├── settings.json             # Hooks (SessionStart memory injection)
     ├── settings.local.json       # Local permissions
     ├── launch.json               # Editor launch config
     ├── hooks/
-    │   └── inject-lessons.sh     # Auto-inject lessons from past sessions
-    ├── skills/
-    │   ├── grill/SKILL.md            # /grill — pre-implementation alignment
-    │   ├── grill-with-docs/SKILL.md  # /grill-with-docs — alignment + CONTEXT/ADR
-    │   ├── plan/SKILL.md             # /plan — architecture planning (4 sections)
-    │   ├── diagnose/SKILL.md         # /diagnose — 6-phase debugging
-    │   ├── review/SKILL.md           # /review — single-file/PR quality check
-    │   └── deepen/SKILL.md           # /deepen — codebase-level refactor opportunities
-    └── lessons/                  # Accumulated lessons (auto-injected)
+    │   └── inject-memory.sh      # Auto-inject Learning + Memory; nudge /r-dreaming past threshold
+    └── skills/
+        ├── r-zoom-out/SKILL.md         # /r-zoom-out — map an unfamiliar module
+        ├── r-grill/SKILL.md            # /r-grill — pre-implementation alignment
+        ├── r-grill-with-docs/SKILL.md  # /r-grill-with-docs — alignment + Wiki/ADR
+        ├── r-plan/SKILL.md             # /r-plan — architecture planning (4 sections)
+        ├── r-diagnose/SKILL.md         # /r-diagnose — 6-phase debugging
+        ├── r-review/SKILL.md           # /r-review — single-file/PR quality check
+        ├── r-deepen/SKILL.md           # /r-deepen — codebase-level refactor opportunities
+        ├── r-handoff/SKILL.md          # /r-handoff — compact conversation into Memory.md
+        └── r-teach/SKILL.md            # /r-teach — turn the workspace into a teaching environment
 ```
 
 ## Core Principles
@@ -45,39 +49,44 @@ Encoded in `.claude/CLAUDE.md`:
 10. **Isolate cross-file refactors** — use git worktree
 11. **Touch only what's necessary** — no drive-by refactor / formatting / docstring
 12. **Ask when ambiguous** — list options, don't silently pick
+13. **Output is an interface** — structure replies for the reader's decision: conclusion first, tables over walls of prose, claims backed by evidence
 
 ## Document Roles
 
 | File | Purpose | When |
 |---|---|---|
-| `.claude/CLAUDE.md` | Rules and process | Rules change |
-| `CONTEXT.md` | Domain glossary | Second time you need to align on a term |
-| `docs/adr/NNNN-*.md` | Architecture decisions | All three ADR conditions hold |
-| `.claude/lessons/*.md` | Recurring failure patterns | You got corrected and it could happen again |
+| `.claude/CLAUDE.md` | Rules, process, stable preferences | Rules change |
+| `.claude/Memory.md` | Volatile session state — where to pick up (gitignored) | End of session (`/r-handoff`) or progress changes |
+| `.claude/Learning.md` | Recurring failure patterns & lessons | You got corrected and it could happen again |
+| `.claude/Wiki.md` | Long-term knowledge: background, stack, dirs, API, glossary | Aligning on a term / resolving a new concept |
+| `docs/adr/NNNN-*.md` | Architecture decisions (why X not Y) | All three ADR conditions hold |
+| `.out-of-scope/*.md` | Rejected proposals (why NOT to do X) | The same proposal could resurface |
 
 ## Custom Skills
 
 | Skill | Trigger | Purpose |
 |---|---|---|
-| `/grill` | Requirements are fuzzy | One-question-at-a-time alignment |
-| `/grill-with-docs` | Domain decisions need to be recorded | grill + CONTEXT/ADR maintenance |
-| `/plan` | Architecture or multi-file changes (after alignment) | Data flow, complexity, risks, go/no-go |
-| `/diagnose` | Bug, regression, test failure, perf issue | 6-phase loop: feedback loop → reproduce → hypothesise → instrument → fix → post-mortem |
-| `/review` | Single file or PR | Taste rating, fatal issues, complexity, data structures |
-| `/deepen` | Codebase-level architecture review | Find shallow modules, weak seams, locality issues |
+| `/r-grill` | Requirements are fuzzy | One-question-at-a-time alignment |
+| `/r-grill-with-docs` | Domain decisions need to be recorded | grill + Wiki/ADR maintenance |
+| `/r-plan` | Architecture or multi-file changes (after alignment) | Data flow, complexity, risks, go/no-go |
+| `/r-diagnose` | Bug, regression, test failure, perf issue | 6-phase loop: feedback loop → reproduce → hypothesise → instrument → fix → post-mortem |
+| `/r-review` | Single file or PR | Taste rating, fatal issues, complexity, data structures |
+| `/r-deepen` | Codebase-level architecture review | Find shallow modules, weak seams, locality issues |
+| `/r-teach` | You want to learn a new concept or skill | Teaching workspace: storage strength, ZPD, cite high-trust sources |
 
 Typical flows:
 - Simple: just do it
-- Medium: `/grill` → implement → `/review`
-- Complex: `/grill-with-docs` → `/plan` → implement → `/review`
-- Bug: `/diagnose`
-- Periodic: `/deepen`
+- Medium: `/r-grill` → implement → `/r-review`
+- Complex: `/r-grill-with-docs` → `/r-plan` → implement → `/r-review`
+- Bug: `/r-diagnose`
+- Periodic: `/r-deepen`
 
 ## Self-Improvement Loop
 
-1. **SessionStart hook** runs `inject-lessons.sh` — reads all `.claude/lessons/*.md` and injects them as system context
-2. When Claude gets corrected, the lesson is saved to `.claude/lessons/`
-3. Next session automatically picks up all accumulated lessons
+1. **SessionStart hook** runs `inject-memory.sh` — injects `.claude/Learning.md` and `.claude/Memory.md` as system context
+2. When Claude gets corrected, the lesson is appended to `.claude/Learning.md` (one `##` heading per lesson)
+3. When `Learning.md` grows past the threshold (≥40 entries / ≥400 lines), the hook nudges you to run `/r-dreaming` to converge — merge duplicates, promote recurring lessons into CLAUDE.md, prune stale entries
+4. `/r-handoff` compacts the conversation into `Memory.md` so the next session picks up where you left off
 
 ADRs in `docs/adr/` are loaded on demand (not auto-injected) — they record one-shot decisions, not recurring patterns.
 
@@ -85,4 +94,4 @@ ADRs in `docs/adr/` are loaded on demand (not auto-injected) — they record one
 
 Clone this repo and open it with Claude Code. The `.claude/` config is picked up automatically.
 
-To use in another project: copy `.claude/`, `CONTEXT.md`, and `docs/` into that project's root, then fill `.claude/stack.md`, `CONTEXT.md`, and add ADRs as decisions arise.
+To use in another project: copy `.claude/` and `docs/` into that project's root, then fill `.claude/Wiki.md` (stack, glossary, etc.) and add ADRs as decisions arise. `.claude/Memory.md` is gitignored — it accumulates per-project as you work.

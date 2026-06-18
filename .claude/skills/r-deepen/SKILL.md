@@ -1,5 +1,5 @@
 ---
-name: deepen
+name: r-deepen
 description: |
   Find deepening opportunities in a codebase: shallow→deep modules,
   better seams, improved testability and locality.
@@ -10,7 +10,7 @@ argument-hint: "[area or module to examine]"
 
 Deepen: $ARGUMENTS
 
-找架構深化機會。針對 codebase 級回顧，不是單檔審查（那是 /review）。
+找架構深化機會。針對 codebase 級回顧，不是單檔審查（那是 /r-review）。
 
 ## 詞彙
 
@@ -29,7 +29,7 @@ Deepen: $ARGUMENTS
 ## 流程
 
 ### 1. Explore
-（若存在）讀 `CONTEXT.md`（repo root）與 `docs/adr/`（repo root）。用 Agent (subagent_type=Explore) 走 codebase。記摩擦點：
+（若有內容）讀 `.claude/Wiki.md`（術語/目錄結構段）與 `docs/adr/`。用 Agent (subagent_type=Explore) 走 codebase。記摩擦點：
 - 理解一個概念要在多個小 module 間跳轉
 - Module 太淺（介面幾乎等於實作）
 - 為測試抽 pure function，但真 bug 藏在呼叫鏈裡（locality 差）
@@ -48,4 +48,4 @@ Deepen: $ARGUMENTS
 不要先提介面設計。問用戶：「哪幾個你想推進？」
 
 ### 3. Drill
-進入對選定候選的細節討論。新概念加入 `CONTEXT.md`（若存在）。被否決且有 load-bearing 理由的，提議寫 ADR 防止未來再被建議。
+進入對選定候選的細節討論。新概念加入 `.claude/Wiki.md` 術語段。被否決且有 load-bearing 理由的，提議寫 ADR 防止未來再被建議。

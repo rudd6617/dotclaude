@@ -1,5 +1,5 @@
 ---
-name: plan
+name: r-plan
 description: |
   Propose an implementation plan for architecture changes or multi-file modifications.
   Use when planning significant code changes after requirements are aligned.
@@ -11,7 +11,7 @@ Plan the implementation for: $ARGUMENTS
 
 ## 前置條件
 
-需求須已對齊。若仍有歧義，先呼叫 `/grill`。
+需求須已對齊。若仍有歧義，先呼叫 `/r-grill`。
 
 ## 思考方式
 

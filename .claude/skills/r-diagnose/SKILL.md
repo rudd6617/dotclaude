@@ -1,5 +1,5 @@
 ---
-name: diagnose
+name: r-diagnose
 description: |
   Systematic diagnosis for hard bugs and performance regressions.
   Reproduce → minimise → hypothesise → instrument → fix → regression-test.
@@ -71,4 +71,4 @@ Diagnose: $ARGUMENTS
 - [ ] 拋棄 prototype 已刪
 - [ ] 正確假設寫進 commit / PR 訊息
 
-**然後問：什麼能預防這個 bug？** 涉及架構（無好 seam / 隱藏耦合）交給 `/deepen`。修完才建議，不是修前。
+**然後問：什麼能預防這個 bug？** 涉及架構（無好 seam / 隱藏耦合）交給 `/r-deepen`。修完才建議，不是修前。

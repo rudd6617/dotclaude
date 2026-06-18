@@ -1,12 +1,14 @@
 ---
-name: review
+name: r-review
 description: |
   Code review following project standards. Use when reviewing code, reading unfamiliar code,
   or when the user asks for a review or code quality assessment.
 argument-hint: "[file or directory]"
 ---
 
-Review the code at $ARGUMENTS following this structure:
+Review the code at $ARGUMENTS following this structure.
+
+無 `$ARGUMENTS` 時，預設審查當前 git diff（`git diff HEAD`；無未提交變更則退回 `git diff main...HEAD`）。
 
 ## 1. 品味評分
 

@@ -86,7 +86,7 @@ out=""
 [ -n "$branch" ] && out+="${CYAN}${branch}${R}${sep}"
 out+="${MAGENTA}${model}${R}"
 out+="${sep}↑$(human "$tok_in") ↓$(human "$tok_out")"
-out+="${sep}${CTX}ctx ${ctx_pct}%${R} ${DIM}of $(human "$ctx_max")${R}"
+out+="${sep}${CTX}ctx ${ctx_pct}%${R} of $(human "$ctx_max")"
 out+="${sep}$(price "$cost")"
 
 printf '%s' "$out"

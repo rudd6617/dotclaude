@@ -6,6 +6,7 @@ Personal Claude Code template — development principles, custom skills, hooks, 
 
 ```
 .
+├── sync.sh                       # Push template updates into another project (overwrite managed, keep yours)
 ├── docs/
 │   ├── ADR-FORMAT.md             # ADR template
 │   └── adr/
@@ -19,6 +20,7 @@ Personal Claude Code template — development principles, custom skills, hooks, 
     ├── settings.json             # Hooks (SessionStart memory injection)
     ├── settings.local.json       # Local permissions
     ├── launch.json               # Editor launch config
+    ├── statusline.sh             # Status bar: git branch · model · token usage · context usage
     ├── hooks/
     │   └── inject-memory.sh      # Auto-inject Learning + Memory; nudge /r-dreaming past threshold
     └── skills/
@@ -90,8 +92,38 @@ Typical flows:
 
 ADRs in `docs/adr/` are loaded on demand (not auto-injected) — they record one-shot decisions, not recurring patterns.
 
+## Status Line
+
+`.claude/statusline.sh` renders: **git branch · model · token usage (↑in ↓out) · context usage (% of window)**, with the context figure coloured green / yellow / red as it fills.
+
+It reads the session JSON from stdin (parsed with `python3`, falling back to `jq`) and asks `git` directly for the branch. No nerd-font glyphs, so it renders anywhere.
+
+**Set it up once per machine (global — every project picks it up):** in `~/.claude/settings.json` point `statusLine` at this repo's script via an absolute path. Clone the repo to the *same* path on each machine (e.g. `~/dotclaude`) so the global config stays portable:
+
+```json
+{ "statusLine": { "type": "command", "command": "/home/you/dotclaude/.claude/statusline.sh" } }
+```
+
+To update it later: `git pull` in your clone — the change applies to all projects on that machine. (This is why the script lives here, not in each project's `.claude/`.)
+
 ## Usage
 
 Clone this repo and open it with Claude Code. The `.claude/` config is picked up automatically.
 
-To use in another project: copy `.claude/` and `docs/` into that project's root, then fill `.claude/Wiki.md` (stack, glossary, etc.) and add ADRs as decisions arise. `.claude/Memory.md` is gitignored — it accumulates per-project as you work.
+**First time in another project** — run the sync script from the target project (or pass its path):
+
+```bash
+/path/to/dotclaude/sync.sh /path/to/your-project        # add --dry-run to preview
+```
+
+Then fill `.claude/Wiki.md` (stack, glossary, etc.) and add ADRs as decisions arise.
+
+**Updating an existing project** — re-run the same command after pulling template changes. `sync.sh` is the single source of truth for what travels:
+
+| | Files | On sync |
+|---|---|---|
+| **Template** | `CLAUDE.md`, `skills/`, `hooks/`, `statusline.sh`, `settings.json`, `docs/ADR-FORMAT.md`, `docs/adr/README.md` | **Overwritten** (project overrides go in `settings.local.json`) |
+| **Project knowledge** | `Wiki.md`, `Learning.md` | **Seeded only if missing** — never clobbered |
+| **Volatile / local** | `Memory.md`, `settings.local.json` | **Untouched** |
+
+`.claude/Memory.md` is gitignored — it accumulates per-project as you work.

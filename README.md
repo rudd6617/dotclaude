@@ -20,7 +20,7 @@ Personal Claude Code template — development principles, custom skills, hooks, 
     ├── settings.json             # Hooks (SessionStart memory injection)
     ├── settings.local.json       # Local permissions
     ├── launch.json               # Editor launch config
-    ├── statusline.sh             # Status bar: git branch · model · token usage · context usage
+    ├── statusline.sh             # Status bar: git branch · model · token usage · context usage · session price
     ├── hooks/
     │   └── inject-memory.sh      # Auto-inject Learning + Memory; nudge /r-dreaming past threshold
     └── skills/
@@ -94,7 +94,7 @@ ADRs in `docs/adr/` are loaded on demand (not auto-injected) — they record one
 
 ## Status Line
 
-`.claude/statusline.sh` renders: **git branch · model · token usage (↑in ↓out) · context usage (% of window)**, with the context figure coloured green / yellow / red as it fills.
+`.claude/statusline.sh` renders: **git branch · model · token usage (↑in ↓out) · context usage (% of window) · session price ($)**, with the context figure coloured green / yellow / red as it fills.
 
 It reads the session JSON from stdin (parsed with `python3`, falling back to `jq`) and asks `git` directly for the branch. No nerd-font glyphs, so it renders anywhere.
 

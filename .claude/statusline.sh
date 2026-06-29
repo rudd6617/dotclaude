@@ -73,7 +73,7 @@ price() {
 }
 
 # --- colours ----------------------------------------------------------------
-R=$'\033[0m'; DIM=$'\033[2m'; CYAN=$'\033[36m'; MAGENTA=$'\033[35m'
+R=$'\033[0m'; CYAN=$'\033[36m'; MAGENTA=$'\033[35m'
 ctx_pct=${ctx_pct%.*}; ctx_pct=${ctx_pct:-0}
 if   [ "$ctx_pct" -ge 80 ]; then CTX=$'\033[31m'   # red
 elif [ "$ctx_pct" -ge 50 ]; then CTX=$'\033[33m'   # yellow

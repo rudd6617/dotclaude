@@ -46,6 +46,7 @@
 | `/r-plan` | 需求已對齊 + 涉及架構選擇 | 收斂為四段方案 |
 | `/r-diagnose` | bug / 異常行為 / 測試失敗 / 效能退化 | 6 階段除錯 |
 | `/r-review` | 完工後 / 讀不熟代碼 | 4 段品質評估 |
+| `/r-multi-review` | 定稿前、怕幻覺/漏需求 | 多模型接地＋對抗審，分歧交你裁決 |
 | `/r-design` | 建構 / 審查前端 UI | 設計 anti-pattern 清單，避免 AI 味 |
 | `/r-deepen` | codebase 級架構回顧 | 找深化機會 |
 | `/r-handoff` | 長對話收尾 / context 壓縮前 | 壓成交接、更新 `.claude/Memory.md` |

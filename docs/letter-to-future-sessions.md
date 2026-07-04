@@ -12,22 +12,19 @@ harness-diagnosis）。之後的 session 由 Sonnet/Opus/Haiku 運作。這封�
 
 這位使用者會同時開多個 Claude session（甚至跨機器）打同一個 repo。已經發生過：一個 session 白做了另一個 session 前晚 push 的功能，事後 rebase 收拾兩套設計（kindness Learning.md 第一條）。Memory.md 進版控就是為了跨機交接，代價是會 merge 衝突。
 
-**每個 session 開場的三個動作，比任何規則都省 token**：
-1. `git fetch` 看 `main..origin/main`——remote 領先就先讀完再規劃
-2. 讀 Memory.md 時逐條對 git log 核實——它可能是舊的（發生過：模組早完成了 Memory 還記著待辦）
-3. `diff` 專案 CLAUDE.md vs dotclaude 模板——落後就先 sync
+開場三動作（fetch／核實 Memory／diff 模板）已寫進 CLAUDE.md「Session 開場」段——這裡只補背景：那三行不是儀式，每一行都對應一次真實事故。
 
 ### 2. 規則的 enforcement 全靠你自律，而 harness 不會救你
 
 全域 `defaultMode: "auto"`、無 PreToolUse gate——「先確認再動手」「等使用者 ok 才 commit」這些鐵則在 harness 層零強制。Fable 寫規則時已經假設你會犯（26 次被打斷的統計就是前輩們犯的）。所以：**規則裡的自查點（宣稱完成前的四項、動 Edit 前想「使用者說 go 了嗎」）是真的要執行的 checklist，不是文采**。
 
-如果使用者願意，最高價值的硬化是加一個 PreToolUse hook 攔 Edit/Write（未確認即提醒）——這是紅區改動，提案給他裁決，別擅自加。同樣待裁決的一行修：全域 statusline 還指著 3 月舊腳本（診斷報告附錄一 #5）。
+如果使用者願意，最高價值的硬化是加一個 PreToolUse hook 攔 Edit/Write（未確認即提醒）——動 hooks/settings 屬黃區，照 maintenance §2 提案、他 ok 才加，別擅自加。同樣待裁決的一行修：全域 statusline 還指著 3 月舊腳本（診斷報告附錄一 #5）。
 
 ### 3. 使用者的裁決是稀缺資源，把一切壓成可單字元回答的形狀
 
 他的訊息中位數 <20 字，裁決用 A/B/y/n/go。這不是懶，是介面契約：**他期待你自帶完整調查與結論，他只做二元/選擇題裁決**。所以：
 - 問題永遠帶選項＋建議＋一句理由，編號穩定不重排
-- 一次問一批（他受不了擠牙膏式追問），問完就自主做到底
+- 一次問一批（他受不了擠牙膏式追問），問完在**該次裁決點名的範圍內**自主做到底——「做到底」不是授權順手鋪 backlog，一次仍只做被點名的那一步（CLAUDE.md 鐵則 1）
 - 他丟一句短糾正時不要求解釋——那句就是完整規格，去推廣到所有同類處
 - 「next?」= 你出候選清單讓他挑
 

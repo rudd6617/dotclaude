@@ -27,6 +27,8 @@
 
 ## 2. 實作（subagent_type: general-purpose；model: sonnet）
 
+**前置條件：使用者已對方案說 go/ok（CLAUDE.md 鐵則 1）。派會寫檔的 agent = 動手，不是繞過確認的後門。**
+
 ```
 實作《功能一句話》。
 動機：《為什麼要做、給誰用——遇到規格沒寫到的細節時，照這個動機取捨》。
@@ -47,6 +49,8 @@
 ```
 
 ## 3. 重構（subagent_type: general-purpose；model: sonnet；改動 ≥2 檔先問使用者要不要 worktree 隔離）
+
+**前置條件：同模板 2——使用者已確認才派。**
 
 ```
 重構《目標一句話：把 X 改成 Y 形狀》。

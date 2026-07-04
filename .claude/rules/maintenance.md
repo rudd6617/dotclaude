@@ -20,7 +20,7 @@
 | 區 | 檔案 | 規則 |
 |---|---|---|
 | **綠區**（自行改，事後在回報提一句） | 專案的 `Memory.md`（handoff 更新）、`Learning.md`（新增教訓條目）、`Wiki.md`（補充事實性知識） | 照各檔頭註解的格式寫；只增改事實，不寫規則 |
-| **黃區**（先提案，使用者一句 ok 才改） | `CLAUDE.md`、`rules/*.md`、`skills/`、`hooks/`、專案 `settings.json` | 提案格式見 §2 |
+| **黃區**（先提案，使用者一句 ok 才改） | `CLAUDE.md`、`rules/*.md`、`skills/`、`hooks/`、專案 `settings.json`、`.claude/agents/*.md`（自訂 agent 定義；要跨專案沿用就建在 dotclaude 並連同提案加入 sync MANAGED） | 提案格式見 §2 |
 | **紅區**（使用者明確指示才動） | `sync.sh`、全域 `~/.claude/settings.json`、**刪除**任何制度檔、改 `.backup-*` | 沒有指示就完全不碰 |
 
 ## 2. 黃區提案格式
@@ -59,4 +59,4 @@
 
 - 在 dotclaude 改完模板檔 → commit → 對**當前工作的專案**跑 `./sync.sh <專案路徑>`（先 `--dry-run` 看一眼要蓋什麼）。
 - 其他專案不用主動巡迴同步；下次在那個專案工作時，開場發現模板落後（`diff -q` CLAUDE.md 即知）再 sync。
-- sync 會**覆蓋**專案的 `CLAUDE.md`/`skills/`/`hooks/`/`settings.json`：若專案副本有未回寫 dotclaude 的本地修改，sync 前先 diff 搶救。
+- sync 會**覆蓋**專案內所有 MANAGED 檔（以 `sync.sh` 清單為準——含 `CLAUDE.md`、`rules/`、`skills/`、`hooks/`、`settings.json` 與 docs 兩檔）：若專案副本有未回寫 dotclaude 的本地修改，sync 前先 diff 搶救。

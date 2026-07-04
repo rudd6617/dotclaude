@@ -28,6 +28,8 @@ Multi-model review of a產出物。目標：抓**事實幻覺**與**需求缺漏
 
 用 Workflow 工具跑下面腳本（子代理的 grep/測試輸出隔離在主上下文外，省 context）。透過 `args` 傳入 Phase 0 的三個值。
 
+**Fallback（工具清單裡沒有 Workflow 時）**：不要硬跑。改用 Agent 工具平行 spawn 等價的 subagent——R1 兩個盲審（一個 `model: opus`、一個 `model: sonnet`，各給下方 R1 prompt 與 artifact，互不知對方存在），收齊後再 spawn R2 反駁者（`model: opus`，給下方 R2 prompt 與 R1 結果）。回報格式照舊。
+
 ```js
 export const meta = {
   name: 'r-multi-review',

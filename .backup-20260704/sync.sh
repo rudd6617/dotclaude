@@ -30,15 +30,13 @@ DST="$(cd "$DST" && pwd)"
 # Template-managed → overwrite (single source of truth).
 MANAGED=(
   ".claude/CLAUDE.md"
-  ".claude/rules"
   ".claude/skills"
   ".claude/hooks"
+  ".claude/statusline.sh"
   ".claude/settings.json"      # project-specific overrides go in settings.local.json
   "docs/ADR-FORMAT.md"
   "docs/adr/README.md"
 )
-# statusline.sh intentionally NOT synced: it lives in this repo only and the
-# global ~/.claude/settings.json statusLine points here (see README §Status Line).
 
 # Seed only if absent → never overwrite filled-in project knowledge.
 SEED=(

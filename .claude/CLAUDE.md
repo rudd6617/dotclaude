@@ -47,6 +47,7 @@
 | `/r-multi-review` | 定稿前、怕幻覺/漏需求 | 多模型接地＋對抗審，分歧交你裁決 |
 | `/r-design` | 建構 / 審查前端 UI | 設計 anti-pattern 清單，避免 AI 味 |
 | `/r-deepen` | codebase 級架構回顧 | 找深化機會 |
+| `/r-audit` | 定期 / 大改制度後 / harness 感覺不對 | 健檢：文件vs現實＋痛點挖掘，發現附驗證指令，裁決後修 |
 | `/r-handoff` | 長對話收尾 / context 壓縮前 | 壓成交接、更新 `.claude/Memory.md` |
 | `/r-teach` | 想學新概念 / 技能（非 dev 主流程） | 建教學工作區，依 storage strength + ZPD 教學 |
 | `/r-dreaming` | Learning.md 過長 / hook 提醒時 | 收斂教訓：合併、升級成原則、退役過期條目 |

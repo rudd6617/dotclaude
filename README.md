@@ -45,6 +45,7 @@ Personal Claude Code template — development principles, custom skills, hooks, 
         ├── r-eli5/SKILL.md             # /r-eli5 — explain to an outsider, big pictures few words
         ├── r-handoff/SKILL.md          # /r-handoff — compact conversation into Memory.md
         ├── r-dreaming/SKILL.md         # /r-dreaming — converge Learning.md
+        ├── r-audit/SKILL.md            # /r-audit — harness health check: doc-vs-reality + pain mining
         └── r-teach/SKILL.md            # /r-teach — turn the workspace into a teaching environment
 ```
 
@@ -108,6 +109,7 @@ Evidence base: `docs/harness-diagnosis-2026-07-04.md` (session-log mining of ~60
 | `/r-eli5` | Explaining something to an outsider | HTML artifact: big pictures, very few words |
 | `/r-handoff` | End of a long session / before compaction | Compact into `.claude/Memory.md` |
 | `/r-dreaming` | `Learning.md` past the threshold | Merge, promote to principles, retire stale entries |
+| `/r-audit` | Periodic / after big institutional changes | Doc-vs-reality audit + pain mining; findings carry verification commands, fixes only after approval |
 | `/r-teach` | You want to learn a new concept or skill | Teaching workspace: storage strength, ZPD, cite high-trust sources |
 
 Typical flows:

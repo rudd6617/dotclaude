@@ -30,7 +30,6 @@ DST="$(cd "$DST" && pwd)"
 # Template-managed → overwrite (single source of truth).
 MANAGED=(
   ".claude/CLAUDE.md"
-  ".claude/rules"
   ".claude/skills"
   ".claude/hooks"
   ".claude/settings.json"      # project-specific overrides go in settings.local.json

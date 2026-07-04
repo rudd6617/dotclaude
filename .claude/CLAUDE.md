@@ -1,78 +1,99 @@
 # Code Review & Development Principles
 
-- Think in English, respond in Traditional Chinese (繁體中文)。短、直、無贅字、結論先行；縮寫/行話首現附一句白話定義——「看不懂」是被糾正最多的失敗〔歷史：dotclaude/docs/harness-diagnosis-2026-07-04.md〕
-
-## 每回合鐵則
-
-1. **先確認再動手**：提出方案 → 等明確的 go/ok/選項編號 → 才開 Edit/Write **或派出任何會寫檔的 subagent**（派工不是繞過確認的後門）。使用者的訊息是**問句**時，回答並列選項，不動工。一次只做被點名的那一步。
-2. **「完成」有定義**：宣稱完成前過 `rules/judgment.md` §1 四項（驗證跑過／自己看過效果／附驗證入口／查核類窮盡清單）。缺項只能報「做到哪、剩什麼」。
-3. **糾正即規格**：一句現象（「不要閃爍」）= 硬規則，套用到**本次改動範圍內**的全部同類處；範圍外的同類處列清單問要不要一起改。同一句糾正第二次出現 = 你的驗證方法有洞，先修驗證再修碼。
-4. **指揮官不下場**：預估讀取 >100 行、或涉及 ≥3 檔、或掃 repo／查網頁／批次改檔 → 派 subagent（先讀 `rules/dispatch.md`）；低於門檻自己做。主對話只進結論。唯讀派工不需確認；會寫檔的派工受鐵則 1 管。
-
-## Session 開場（多 session 並行防護，每次都做）
-
-1. `git fetch` 看 `main..origin/main`——remote 領先就先讀完再規劃（多 session＝多開發者，發生過白做重工〔歷史：kindness Learning.md〕）
-2. 讀 Memory.md 時逐條對 git log 核實——過期就當場改（發生過：模組早完成，Memory 還記著待辦）
-3. `diff -q` 專案 CLAUDE.md vs dotclaude 模板——落後先 sync
-
-## 規則檔路由（觸發時必讀，不要憑印象做）
-
-| 情境 | 讀 |
-|---|---|
-| 要派 subagent／大量讀檔／選模型／重試失敗任務 | `.claude/rules/dispatch.md` |
-| 派工 prompt 怎麼寫（搜尋/實作/重構/研究/審查） | `.claude/rules/delegation-templates.md` |
-| 判斷：算不算完成／該不該問／該不該換路／怎麼驗 | `.claude/rules/judgment.md` |
-| 要改 CLAUDE.md、rules/、skills/、hooks、settings | `.claude/rules/maintenance.md` |
+## Language
+- Think in English, respond in Traditional Chinese (繁體中文)
+- Be direct and concise — no filler, no sugarcoating
 
 ## Core Philosophy
 
-1. **Data structures first** — 先搞清楚數據結構和流向，再寫邏輯
-2. **Eliminate special cases** — 需要 if/else 處理邊界時，優先重設計數據結構消除分支
-3. **Max 3 levels of indentation** — 超過就拆分。函數只做一件事
-4. **Never break existing behavior** — 動 ≥2 檔或改公開行為，先列影響範圍；改壞相鄰功能（改 A 壞 B）是高頻痛點，改完實走受影響流程
-5. **Solve real problems** — 不解決假想的威脅。複雜度匹配問題嚴重性
-6. **Early return, fail fast** — 錯誤立刻暴露，不靜默吞掉，不防禦性 try-catch
-7. **命名表達意圖** — 說「做什麼」，不說「怎麼做」
-8. **依賴保守** — 標準庫能解決就不引第三方；引入前說明理由
-9. **改 bug 先寫測試** — 先寫能重現問題的失敗測試再修；新功能含分支邏輯或邊界條件就寫測試，純樣板免
-10. **隔離變更** — 改動 ≥2 檔時先問要不要 git worktree 隔離；由使用者決定
-11. **只改該改的** — 不順手加 docstring/type hints/格式化；UI 不加沒點名的 label、hint、標題、section。每行改動可追溯到需求。發現 dead code 提出但不動手
-12. **歧義先問** — 多重解讀時列選項讓使用者選（穩定編號，之後不重排）。但查得到的事實（版本、API、legacy 行為）自己查，不拿來問
-13. **輸出即介面** — 先結論後論證；選項題固定格式：一行結論 → 差異表 → 建議＋理由
+1. **程式品味** — 先搞清楚數據結構和流向，再寫邏輯；用重新設計數據結構來消除 if/else 分支，而不是堆條件判斷；縮排超過 3 層就拆分，函數只做一件事；命名表達「做什麼」不表達「怎麼做」。
+2. **Never break existing behavior** — 任何改動都不能破壞現有功能。動到 **≥2 檔或改變公開行為**時，改之前先列出影響範圍；單檔內部改免。
+3. **Solve real problems** — 不解決假想的威脅。方案的複雜度必須匹配問題的嚴重性。
+4. **Early return, fail fast** — 錯誤應該立刻暴露，不靜默吞掉。不做防禦性編程，不在內部函數裡用 try-catch 包一切。
+5. **依賴保守** — 能用標準庫解決的不引入第三方。引入新依賴前須說明理由。
+6. **改 bug 先寫測試** — 修 bug 前先寫一個能重現問題的失敗測試，再修；無正確 test seam 時記錄為架構問題（見 `/r-diagnose` Phase 5）。新功能**含分支邏輯或邊界條件就寫測試**，純樣板/配置免。
+7. **隔離變更** — 改動觸及 **2 個以上檔案**時，動工前先問我要不要用 git worktree 隔離開發（避免污染主分支）；由我決定，不自行預設。單檔改動免問。
+8. **只改該改的** — 不順手加 docstring、type hints、改 formatting。不重構沒壞的代碼。每一行改動都要能追溯到需求。發現無關的 dead code，提出但不動手。
+9. **歧義先問** — 需求有多重解讀時，列出選項讓我選，不要靜默挑一個做下去。
+10. **輸出即介面** — 先結論後論證，能用表格/清單就不用長段落，技術判斷附依據。
 
 ## 文件分工
 
-| 檔案 | 內容 | 何時更新 |
+| 檔案 | 內容 | 何時建/更新 |
 |---|---|---|
-| `.claude/CLAUDE.md`、`rules/*.md` | 行為鐵則、守則、路由（模板管理，**改走 dotclaude 再 sync**） | 見 rules/maintenance.md |
-| `.claude/Memory.md` | 當前進展、待辦、下次入口（揮發，**進版控**——換機接手用；平行 session 注意衝突） | 收尾 `/r-handoff` 或進度變動 |
-| `.claude/Learning.md` | 重複失敗模式（hook 自動注入）。被糾正 → 當場寫入；跨專案通用教訓 → 依 maintenance §3 提案升級 | 當場 |
-| `.claude/Wiki.md` | 長期知識：背景、技術棧、目錄、API、術語 | 對齊術語/新概念時 |
-| `docs/adr/NNNN-*.md` | 架構決策（為什麼選 X 非 Y） | 三條件全成立：hard to reverse ＋ surprising without context ＋ real trade-off |
-| `.out-of-scope/*.md` | 明確拒絕的提議（為什麼不做 X） | 同提議可能再現時 |
+| `.claude/CLAUDE.md` | 行為規則、原則、流程指引、穩定用戶偏好 | 規則改變時 |
+| `.claude/Memory.md` | 當前進展、待辦、下次入口、建議 skill（揮發狀態，**gitignore**） | 對話收尾（`/r-handoff`）或進度變動時 |
+| `.claude/Learning.md` | 重複出現的失敗模式 / 教訓（單檔） | 被糾正且推測會再犯時 |
+| `.claude/Wiki.md` | 長期知識：項目背景、技術棧、目錄結構、API、業務口徑、術語 | 對齊術語 / 解析新概念時 |
+| `docs/adr/NNNN-*.md` | 架構決策（為什麼選 X 而非 Y） | 三條件全成立時建（見 `docs/ADR-FORMAT.md`） |
+| `.out-of-scope/*.md` | 明確拒絕的提議（為什麼不做 X） | 同樣的提議可能再被提出時 |
+
+語義分界：
+- **Wiki.md vs ADR/out-of-scope**：「現在是什麼」→ Wiki；「為什麼這樣 / 為什麼不做」→ 決策日誌
+- **ADR vs Learning**：ADR 一次性決策、有編號、不刪、有 Status 流轉；Learning 可演化、可整併、SessionStart 注入，累積過量由 `/r-dreaming` 收斂
 
 ## Skill 分工
 
-| Skill | 時機 |
-|---|---|
-| `/r-zoom-out` | 進入陌生模組前，建全域視角 |
-| `/r-grill` | 需求模糊、動工前，逐 branch 質問對齊 |
-| `/r-grill-with-docs` | grill ＋ 要留 Wiki/ADR 決策紀錄 |
-| `/r-plan` | 需求已對齊＋有架構選擇，收斂四段方案 |
-| `/r-diagnose` | bug/異常/測試失敗/效能退化，6 階段除錯 |
-| `/r-review` | 完工後或讀不熟代碼，4 段品質評估 |
-| `/r-multi-review` | 定稿前，多模型接地＋對抗審，分歧交使用者裁決 |
-| `/r-design` | 建構/審查前端 UI，避免 AI 味 |
-| `/r-handoff` | 長對話收尾/context 壓縮前，更新 Memory.md |
-| `/r-deepen`、`/r-dreaming`、`/r-teach` | 架構回顧／Learning.md 超門檻收斂（hook 會提醒）／學新概念 |
+| Skill | 時機 | 用法 |
+|---|---|---|
+| `/r-fable` | **要派 subagent／宣稱「完成」前／同一件事卡關兩次／想開口問使用者前／要動 .claude 制度檔** | Fable 制度層：調度、完成判準、升降級、維護分區（附派工模板） |
+| `/r-zoom-out` | 進入陌生模組前 | 建立全域視角（角色/邊界/數據流） |
+| `/r-grill` | 需求模糊、動工前 | 一輪問完可答的 frontier，逐輪收斂；解析出術語 / 觸發三條件時順帶維護 Wiki/ADR |
+| `/r-wayfinder` | 巨大模糊工程、一個 session 裝不下 | GitHub 決策地圖，逐票解到路徑清晰；只規劃不建構 |
+| `/r-plan` | 需求已對齊 + 涉及架構選擇 | 收斂為四段方案 |
+| `/r-ticket` | 需求已對齊、要拆成可獨立交付的切片 | 產出 GitHub spec issue + tracer-bullet 子票（含阻塞順序） |
+| `/r-diagnose` | bug / 異常行為 / 測試失敗 / 效能退化 | 6 階段除錯 |
+| `/r-review` | 完工後 / 讀不熟代碼 | 4 段品質評估 |
+| `/r-multi-review` | 定稿前、怕幻覺/漏需求 | 多模型接地＋對抗審，分歧交你裁決 |
+| `/r-design` | 建構 / 審查前端 UI | 設計 anti-pattern 清單，避免 AI 味 |
+| `/r-deepen` | codebase 級架構回顧 | 找深化機會 |
+| `/r-handoff` | 長對話收尾 / context 壓縮前 | 壓成交接、更新 `.claude/Memory.md` |
+| `/r-teach` | 想學新概念 / 技能（非 dev 主流程） | 建教學工作區，依 storage strength + ZPD 教學 |
+| `/r-dreaming` | Learning.md 過長 / hook 提醒時 | 收斂教訓：合併、升級成原則、退役過期條目 |
+| `/r-eli5` | 要把某個東西解釋給外行 / 主管 / 同事 | 大圖極少字的 HTML artifact，一次性不留檔 |
 
-典型流程：陌生代碼 `/r-zoom-out`→後續；簡單（單檔）直接做；中等（2–3 檔）`/r-grill`→動工→`/r-review`；複雜（≥4 檔或架構取捨或不可逆）`/r-grill-with-docs`→`/r-plan`→動工→`/r-review`；出 bug `/r-diagnose`；收尾 `/r-handoff`。
+典型流程：
+- 陌生代碼：`/r-zoom-out` → 後續
+- 簡單（單檔、無架構選擇）：直接做
+- 中等（2–3 檔、無架構取捨）：`/r-grill` → 動工 → `/r-review`
+- 複雜（≥4 檔 或 有架構取捨 或 不可逆）：`/r-grill` → `/r-plan` → 動工 → `/r-review`
+- GitHub ticket 流程（多切片）：`/r-grill`（或 `/r-plan`）→ `/r-ticket` → 逐票走「實作段」→ 關 issue
+- 巨大模糊工程（多 session）：`/r-wayfinder`（畫地圖 / 逐票解決策）→ 霧散後 `/r-ticket` → 逐票實作
+- 出 bug：`/r-diagnose`
+- 中後期回顧：`/r-deepen`
+- 對話收尾：`/r-handoff`
+
+## ADR 機制
+
+三條件（hard to reverse / surprising without context / real trade-off）全成立才建。判準、什麼算、格式，全部見 `docs/ADR-FORMAT.md`；目錄說明見 `docs/adr/README.md`。
 
 ## Workflow
 
-1. **理解** — 一句話重述需求；模糊叫 `/r-grill`；業務語義先查 legacy/Wiki，查不到列待確認，不自行拍板
-2. **調查** — 讀相關檔、掃等價實作（避免雙軌重複）；大量讀取派 subagent
-3. **規劃** — 架構選擇或 ≥4 檔變更用 `/r-plan`
-4. **實作** — 最笨最清晰的代碼；先在 1 檔驗證 pattern 再批次
-5. **驗證** — 測試/typecheck/lint＋實走受影響流程；完工回報附驗證入口（URL/步驟/測試資料）
-6. **提交** — 等使用者確認再 commit。Commit message 英文簡潔，一個 commit 一件事
+IMPORTANT: 所有程式碼變更必須經過我確認後才可以執行。提出方案 → 等待確認 → 再動手。
+
+1. **理解需求** — 用一句話重述需求。模糊時呼叫 `/r-grill` 對齊
+2. **調查** — 讀相關檔案、了解現有架構。複雜場景用 subagents
+3. **規劃** — **有架構選擇（多個可行方案要取捨）或 ≥4 檔變更**時，用 `/r-plan` 產出四段摘要
+4. **實作** — 寫最笨但最清晰的代碼。避免過度抽象和過度設計
+5. **驗證** — 跑測試、typecheck、lint。確保零破壞性
+6. **提交** — 等我確認後再 commit
+
+跑 ticket 流程時，每張票獨立走這條迴圈：抓一張 `ready-for-agent` 票 → 實作段（4–6）→ `/r-review` → commit → `gh issue close`，票與票之間清空 context。
+
+## Git Conventions
+- Commit message 用英文，簡潔明確
+- 一個 commit 做一件事
+
+## 專案級預設（各 skill 不必重述）
+
+- 動到代碼或寫票前，用 `.claude/Wiki.md` 的既有詞彙，並尊重相關區域的 `docs/adr/`。
+- 命名跟著代碼與 glossary 走，不自創同義詞。
+
+## Project Context
+
+通用模板。技術棧與長期知識見 `.claude/Wiki.md`（請依專案填寫）。
+
+## Self-Improvement
+`.claude/Learning.md` 與 `.claude/Memory.md` 會透過 SessionStart hook 自動注入，不需手動讀取。
+被糾正時，將教訓寫入 `.claude/Learning.md`（一條一個 `##` 標題）。
+條目累積過量時，hook 會提醒跑 `/r-dreaming` 收斂。

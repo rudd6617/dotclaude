@@ -1,7 +1,7 @@
 # Harness 診斷報告（2026-07-04，Fable 5 session 產出）
 
 <!--
-一次性審計報告，供 rules/ 各檔引用證據。不隨 sync 進專案、不需維護。
+一次性審計報告，供 r-fable 各分冊引用證據。不隨 sync 進專案、不需維護。
 資料基礎：
 - Session log〔歷史〕：kindness 36 場（~350 則實質訊息）、kindness-demo 12 場（~183 則）、
   kindness-app + 其他專案（~78 則）。全部 user 訊息逐則讀完，非抽樣。
@@ -25,7 +25,7 @@
 
 單一假完成最多觀測到 8 輪追問（vite build/dev 事件）；「平均 2–8 輪」的量化是推估，見文末假設區。每輪追問都載著整段 context——這是整個 harness 最大的 token 漏洞，比任何單次讀檔浪費都大。
 
-**修法**（已落檔 `rules/judgment.md` §1、§4）：完成 = 驗證跑過＋自己看過效果＋附驗證入口＋查核類任務窮盡清單，缺一項只能報「做到哪、剩什麼」。前端改動第一步先確認 dev/watch 與 port。
+**修法**（已落檔 `skills/r-fable/judgment.md` §1、§4）：完成 = 驗證跑過＋自己看過效果＋附驗證入口＋查核類任務窮盡清單，缺一項只能報「做到哪、剩什麼」。前端改動第一步先確認 dev/watch 與 port。
 
 ### 第二名（最容易失焦）：搶跑——把討論當指令、把局部當全部〔歷史＋實測〕
 
@@ -40,7 +40,7 @@
 
 **結構性根因（審計發現 #7）**：CLAUDE.md 寫「所有程式碼變更必須經過我確認」，但全域 `defaultMode: "auto"` 且無任何 PreToolUse gate——這條規則在 harness 層零強制，純靠模型自律，而弱模型自律不可靠。
 
-**修法**：`rules/judgment.md` §2（問句=提問不是指令；業務語義先查 legacy 再問；默默決定=最貴的決定）。硬性 gate 屬使用者裁決項，見附錄一 #7。
+**修法**：`skills/r-fable/judgment.md` §2（問句=提問不是指令；業務語義先查 legacy 再問；默默決定=最貴的決定）。硬性 gate 屬使用者裁決項，見附錄一 #7。
 
 ### 第三名（最容易出錯）：文件宣稱的機制不存在——制度腐蝕〔實測〕
 
@@ -53,7 +53,7 @@
 - README skill 清單缺 4 個實際存在的 skill；`.claude/lessons/` 空目錄殘留
 - r-multi-review 依賴 `Workflow` 工具，該工具非所有環境都有，skill 無 fallback
 
-**修法**：本次已修（見附錄一處置欄）＋ `rules/maintenance.md` §4 立規：「宣稱有自動化就當場驗證它存在」；模板管理檔只改 dotclaude、改完即 sync。
+**修法**：本次已修（見附錄一處置欄）＋ `skills/r-fable/maintenance.md` §4 立規：「宣稱有自動化就當場驗證它存在」；模板管理檔只改 dotclaude、改完即 sync。
 
 ## 附錄一：審計發現清單（現況 → 修法 → 驗證指令 → 本次處置）
 
@@ -93,7 +93,7 @@
 - 「假完成平均引發 2–8 輪返工」：上界 8 有實例，「平均」未逐案統計。
 - 痛點次數 ±20%：單一 agent 逐則人工判讀，未做第二遍獨立計數。
 - 三大弱點的排序權重（token 漏損 > 失焦 > 出錯）是判斷，不是量測。
-- 「Sonnet 照 checklist 可預防六成糾正」：規則覆蓋面推算，待未來 session 的 ✓/✗ 標註驗證（rules/maintenance.md §5）。
+- 「Sonnet 照 checklist 可預防六成糾正」：規則覆蓋面推算，待未來 session 的 ✓/✗ 標註驗證（skills/r-fable/maintenance.md §5）。
 
 ## 附錄三：使用者溝通風格校準（弱模型必讀）〔歷史〕
 

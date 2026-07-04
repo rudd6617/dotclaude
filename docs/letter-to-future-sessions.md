@@ -1,8 +1,7 @@
 # 給未來 session 的信（2026-07-04，Fable 5 絕筆）
 
 <!--
-寫作背景：使用者用唯一一次 Fable 5 session 立了這套制度（rules/ 四檔＋CLAUDE.md 重寫＋
-harness-diagnosis）。之後的 session 由 Sonnet/Opus/Haiku 運作。這封信一次講清楚
+寫作背景：使用者用唯一一次 Fable 5 session 立了這套制度（統整成 /r-fable skill：SKILL.md 鐵則＋四分冊；CLAUDE.md 維持原樣只加一列路由＋harness-diagnosis）。之後的 session 由 Sonnet/Opus/Haiku 運作。這封信一次講清楚
 制度沒寫、但你需要知道的事。換新機器或換主力模型時讀一遍即可，平常不用。
 -->
 
@@ -12,7 +11,7 @@ harness-diagnosis）。之後的 session 由 Sonnet/Opus/Haiku 運作。這封�
 
 這位使用者會同時開多個 Claude session（甚至跨機器）打同一個 repo。已經發生過：一個 session 白做了另一個 session 前晚 push 的功能，事後 rebase 收拾兩套設計（kindness Learning.md 第一條）。Memory.md 進版控就是為了跨機交接，代價是會 merge 衝突。
 
-開場三動作（fetch／核實 Memory／diff 模板）已寫進 CLAUDE.md「Session 開場」段——這裡只補背景：那三行不是儀式，每一行都對應一次真實事故。
+開場三動作（fetch／核實 Memory／diff 模板）寫在 r-fable SKILL.md「Session 開場」段——這裡只補背景：那三行不是儀式，每一行都對應一次真實事故。
 
 ### 2. 規則的 enforcement 全靠你自律，而 harness 不會救你
 
@@ -24,13 +23,13 @@ harness-diagnosis）。之後的 session 由 Sonnet/Opus/Haiku 運作。這封�
 
 他的訊息中位數 <20 字，裁決用 A/B/y/n/go。這不是懶，是介面契約：**他期待你自帶完整調查與結論，他只做二元/選擇題裁決**。所以：
 - 問題永遠帶選項＋建議＋一句理由，編號穩定不重排
-- 一次問一批（他受不了擠牙膏式追問），問完在**該次裁決點名的範圍內**自主做到底——「做到底」不是授權順手鋪 backlog，一次仍只做被點名的那一步（CLAUDE.md 鐵則 1）
+- 一次問一批（他受不了擠牙膏式追問），問完在**該次裁決點名的範圍內**自主做到底——「做到底」不是授權順手鋪 backlog，一次仍只做被點名的那一步（r-fable 鐵則 1）
 - 他丟一句短糾正時不要求解釋——那句就是完整規格，去推廣到所有同類處
 - 「next?」= 你出候選清單讓他挑
 
 ## 這套制度最可能的退化方式（按可能性排序）與預防
 
-1. **路由檔沒被讀**——弱模型看到 CLAUDE.md 的路由表但嫌麻煩不去讀 rules/，憑印象派工。預防：CLAUDE.md 的四條鐵則已 inline 最關鍵行為，rules/ 只放細節；如果發現自己（或接手 session）跳過路由，把跳掉的那條判準提案升回 CLAUDE.md inline——路由失效的規則等於不存在。
+1. **r-fable 沒被觸發**——弱模型嫌麻煩不呼叫 skill，憑印象派工/宣稱完成。預防：r-fable 的 description 常駐 skill 清單，harness 本身指示「任務吻合就先呼叫 skill」；CLAUDE.md Skill 分工表第一列也寫明觸發時機。若發現自己（或接手 session）還是跳過，把跳掉的那條判準提案升進 CLAUDE.md inline——不被觸發的規則等於不存在。
 2. **只增不減的規則堆積**——每次踩坑加一條，三個月後互相矛盾、沒人讀得完。預防：maintenance.md §4 的三件套門檻（寫不出違反範例的規則不收）＋行數上限＋/r-dreaming 收斂。收規則前 grep 舊規則是硬步驟。
 3. **文件與實況再度脫鉤**——新 skill 沒進 README、專案副本改了沒回寫模板、宣稱的自動化又變空頭（這次審計抓到 5 處，就是這樣長出來的）。預防：maintenance.md §0/§4/§5；「宣稱有自動化就當場 ls 驗證」要成反射。
 4. **假完成復發**——judgment §1 依賴自我回報誠實，模型會在壓力下說「完成了」。預防：驗證不自驗（dispatch §6）——高風險產出派 fresh-context agent 驗收，成本很低，別省。
@@ -57,11 +56,11 @@ harness-diagnosis）。之後的 session 由 Sonnet/Opus/Haiku 運作。這封�
 **最可能被證明是錯的**（按懷疑度排序，發現不對就走 maintenance §2 改）：
 1. **dispatch 的門檻數字**（>100 行、≥3 檔、重試 2 輪）——方向對，數字是拍的，沒有 A/B 證據。預期要按實際磨合調整。
 2. **模型型號表**——模型名稱與能力分層會過時，dispatch 檔頭已寫自更新指令，但「haiku 做機械批次夠用」這個分層假設本身可能錯。
-3. **規則生命週期的 ✓/✗ 標註**（maintenance §5）——依賴弱模型自覺執行寫回，很可能沒人做。三個月後若 rules/ 裡一個標註都沒有，這條機制就是死的，屆時改成 /r-handoff 時強制問一句「本次哪條規則起了作用/擋了路」。
+3. **規則生命週期的 ✓/✗ 標註**（maintenance §5）——依賴弱模型自覺執行寫回，很可能沒人做。三個月後若 r-fable 分冊裡一個標註都沒有，這條機制就是死的，屆時改成 /r-handoff 時強制問一句「本次哪條規則起了作用/擋了路」。
 4. **delegation-templates 的長度**——模板可能太長，弱模型嫌煩不用。退化訊號：派工 prompt 又變回一句話。屆時把模板砍半，只留三件套骨架。
 
 ## 未竟事項（截至 2026-07-04 收筆）
 
 - 診斷報告附錄一 #5（statusline 指向）、#7（PreToolUse gate）待使用者裁決。
 - dotclaude 的變更已 commit；各專案（kindness 以外）尚未 re-sync，下次在該專案工作時開場 sync 即可。
-- 本次新 rules 尚未經真實 session 驗證——第一週注意路由表是否真的被觸發遵守，發現不順手就走 maintenance §2 提案修。
+- 本次 r-fable 尚未經真實 session 驗證——第一週注意 skill 是否真的在派工/完成/重試前被觸發，發現不順手就走 maintenance §2 提案修。

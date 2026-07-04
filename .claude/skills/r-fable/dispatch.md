@@ -1,6 +1,6 @@
 # 模型調度守則（dispatch.md）
 
-**本檔型號表寫定於 2026-07-04〔實測〕。每次 session 開始先確認可用模型清單（看 system prompt 的模型/agent 資訊），與本檔不符時以實際為準，並更新本檔的型號表**（事實修正，已獲使用者常設授權——改 dotclaude 那份再 sync，見 rules/maintenance.md §0）。
+**本檔型號表寫定於 2026-07-04〔實測〕。每次 session 開始先確認可用模型清單（看 system prompt 的模型/agent 資訊），與本檔不符時以實際為準，並更新本檔的型號表**（事實修正，已獲使用者常設授權——改 dotclaude 那份再 sync，見同目錄 maintenance.md §0）。
 
 <!--
 讀者：未來 session 的主模型（Sonnet 等級為預設假設）。
@@ -54,7 +54,7 @@
 2. **驗收條件** — 可檢查的判準（「找到全部 call site」→「回報數量＋grep 指令讓我複核」）
 3. **回報格式** — 明確欄位；規定長度上限
 
-填空模板見 [rules/delegation-templates.md](delegation-templates.md)。
+填空模板見 [delegation-templates.md](delegation-templates.md)（同目錄）。
 
 ## 3. 顯式指定 model
 

@@ -61,7 +61,7 @@
 2. **[a] Memory.md gitignore 宣稱 vs 進版控實況**（README ×3、模板 CLAUDE.md、r-handoff SKILL.md）→ 統一為「進版控」→ `cd kindness && git ls-files .claude/Memory.md`（有輸出=tracked）→ **✅ 本次已統一**
 3. **[a] kindness CLAUDE.md 的「進版控」修正未 backport 模板**，下次 sync 會倒退 → backport → `diff dotclaude/.claude/CLAUDE.md kindness/.claude/CLAUDE.md`（修後：無差異）→ **✅ 本次隨 CLAUDE.md 重寫解決**
 4. **[a] README skill 清單缺 r-design/r-multi-review 等 4 個** → 補齊 → `grep -c "r-design\|r-multi-review" dotclaude/README.md`（修前：0）→ **✅ 本次已補**
-5. **[a] 全域 statusline 指向舊版腳本**，README 宣稱功能沒在跑 → 把 `~/.claude/settings.json` 的 statusLine.command 改成 `/Users/rudolfchen/Documents/dotclaude/.claude/statusline.sh` → `grep -A2 statusLine ~/.claude/settings.json` → **⏸ 使用者裁決**（動全域設定=紅區；一行指令可修）
+5. **[a] 全域 statusline 指向舊版腳本**，README 宣稱功能沒在跑 → 把 `~/.claude/settings.json` 的 statusLine.command 改成 `/Users/rudolfchen/Documents/dotclaude/.claude/statusline.sh` → `grep -A2 statusLine ~/.claude/settings.json` → **✅ 2026-07-04 使用者裁決後已改**（同回合 repo 版加了 cwd 段）
 6. **[a] statusline.sh 同時宣稱「住在 repo」又被 sync 進各專案**成死副本 → 從 MANAGED 移除＋清死副本 → `grep -n statusline dotclaude/sync.sh` → **✅ MANAGED 已移除。各專案既有死副本 sync 不會清，下次在該專案 sync 時順手刪**
 7. **[a] 「先確認再動手」harness 層零強制**（defaultMode=auto、無 PreToolUse gate）→ 選項：(a) 接受純行為約束（現狀，靠 rules 強化）(b) 加 PreToolUse hook 攔 Edit/Write 未確認即擋 → `python3 -c "import json;print(json.load(open('$HOME/.claude/settings.json'))['permissions'])"` → **⏸ 使用者裁決**（gate 會顯著增加互動成本）
 8. **[b] r-multi-review 依賴 Workflow 工具無 fallback** → SKILL.md 加「無 Workflow 時用 Agent 平行 spawn」→ `grep -c "fallback\|Agent" dotclaude/.claude/skills/r-multi-review/SKILL.md` → **✅ 本次已加**

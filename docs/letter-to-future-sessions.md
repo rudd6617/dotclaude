@@ -61,6 +61,6 @@
 
 ## 未竟事項（截至 2026-07-04 收筆）
 
-- 診斷報告附錄一 #5（statusline 指向）、#7（PreToolUse gate）待使用者裁決。
+- 診斷報告附錄一 #7（PreToolUse gate）待使用者裁決。（#5 statusline 指向已於 2026-07-04 裁決修復。）
 - dotclaude 的變更已 commit；**所有專案（含 kindness）都尚未 sync**——使用者選擇制度先留在 dotclaude 觀察。在任何專案要啟用，跑 `dotclaude/sync.sh <專案路徑>`（先 --dry-run）。
 - 本次 r-fable 尚未經真實 session 驗證——第一週注意 skill 是否真的在派工/完成/重試前被觸發，發現不順手就走 maintenance §2 提案修。

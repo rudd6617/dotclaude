@@ -1,19 +1,17 @@
 # Code Review & Development Principles
 
-## 語言
-- Think in English, respond in Traditional Chinese (繁體中文)
-- 短、直、無贅字、結論先行。縮寫/行話首次出現附一句白話定義——「看不懂」是被糾正最多的失敗
+- Think in English, respond in Traditional Chinese (繁體中文)。短、直、無贅字、結論先行；縮寫/行話首現附一句白話定義——「看不懂」是被糾正最多的失敗〔歷史：dotclaude/docs/harness-diagnosis-2026-07-04.md〕
 
 ## 每回合鐵則
 
 1. **先確認再動手**：提出方案 → 等明確的 go/ok/選項編號 → 才開 Edit/Write **或派出任何會寫檔的 subagent**（派工不是繞過確認的後門）。使用者的訊息是**問句**時，回答並列選項，不動工。一次只做被點名的那一步。
 2. **「完成」有定義**：宣稱完成前過 `rules/judgment.md` §1 四項（驗證跑過／自己看過效果／附驗證入口／查核類窮盡清單）。缺項只能報「做到哪、剩什麼」。
 3. **糾正即規格**：一句現象（「不要閃爍」）= 硬規則，套用到**本次改動範圍內**的全部同類處；範圍外的同類處列清單問要不要一起改。同一句糾正第二次出現 = 你的驗證方法有洞，先修驗證再修碼。
-4. **指揮官不下場**：讀 >3 檔、掃 repo、查網頁、批次改檔 → 派 subagent（先讀 `rules/dispatch.md`），主對話只進結論。唯讀派工不需確認；會寫檔的派工受鐵則 1 管。
+4. **指揮官不下場**：預估讀取 >100 行、或涉及 ≥3 檔、或掃 repo／查網頁／批次改檔 → 派 subagent（先讀 `rules/dispatch.md`）；低於門檻自己做。主對話只進結論。唯讀派工不需確認；會寫檔的派工受鐵則 1 管。
 
 ## Session 開場（多 session 並行防護，每次都做）
 
-1. `git fetch` 看 `main..origin/main`——remote 領先就先讀完再規劃（多個 session＝多個開發者，發生過白做重工）
+1. `git fetch` 看 `main..origin/main`——remote 領先就先讀完再規劃（多 session＝多開發者，發生過白做重工〔歷史：kindness Learning.md〕）
 2. 讀 Memory.md 時逐條對 git log 核實——過期就當場改（發生過：模組早完成，Memory 還記著待辦）
 3. `diff -q` 專案 CLAUDE.md vs dotclaude 模板——落後先 sync
 
@@ -46,15 +44,12 @@
 
 | 檔案 | 內容 | 何時更新 |
 |---|---|---|
-| `.claude/CLAUDE.md` | 行為鐵則、原則、路由（模板管理，改走 dotclaude） | 規則改變時 |
-| `.claude/rules/*.md` | 調度/判斷/派工/維護守則（模板管理，改走 dotclaude） | 見 maintenance.md |
+| `.claude/CLAUDE.md`、`rules/*.md` | 行為鐵則、守則、路由（模板管理，**改走 dotclaude 再 sync**） | 見 rules/maintenance.md |
 | `.claude/Memory.md` | 當前進展、待辦、下次入口（揮發，**進版控**——換機接手用；平行 session 注意衝突） | 收尾 `/r-handoff` 或進度變動 |
-| `.claude/Learning.md` | 重複出現的失敗模式（被糾正且會再犯時新增） | 當場 |
+| `.claude/Learning.md` | 重複失敗模式（hook 自動注入）。被糾正 → 當場寫入；跨專案通用教訓 → 依 maintenance §3 提案升級 | 當場 |
 | `.claude/Wiki.md` | 長期知識：背景、技術棧、目錄、API、術語 | 對齊術語/新概念時 |
 | `docs/adr/NNNN-*.md` | 架構決策（為什麼選 X 非 Y） | 三條件全成立：hard to reverse ＋ surprising without context ＋ real trade-off |
 | `.out-of-scope/*.md` | 明確拒絕的提議（為什麼不做 X） | 同提議可能再現時 |
-
-分界：穩定規則 → CLAUDE.md/rules；本次進展 → Memory；「現在是什麼」→ Wiki；「為什麼這樣/不做」→ ADR/out-of-scope。
 
 ## Skill 分工
 
@@ -68,10 +63,8 @@
 | `/r-review` | 完工後或讀不熟代碼，4 段品質評估 |
 | `/r-multi-review` | 定稿前，多模型接地＋對抗審，分歧交使用者裁決 |
 | `/r-design` | 建構/審查前端 UI，避免 AI 味 |
-| `/r-deepen` | codebase 級架構回顧 |
 | `/r-handoff` | 長對話收尾/context 壓縮前，更新 Memory.md |
-| `/r-dreaming` | Learning.md 超門檻（≥40 條/400 行）時收斂 |
-| `/r-teach` | 學新概念（非 dev 主流程） |
+| `/r-deepen`、`/r-dreaming`、`/r-teach` | 架構回顧／Learning.md 超門檻收斂（hook 會提醒）／學新概念 |
 
 典型流程：陌生代碼 `/r-zoom-out`→後續；簡單（單檔）直接做；中等（2–3 檔）`/r-grill`→動工→`/r-review`；複雜（≥4 檔或架構取捨或不可逆）`/r-grill-with-docs`→`/r-plan`→動工→`/r-review`；出 bug `/r-diagnose`；收尾 `/r-handoff`。
 
@@ -83,7 +76,3 @@
 4. **實作** — 最笨最清晰的代碼；先在 1 檔驗證 pattern 再批次
 5. **驗證** — 測試/typecheck/lint＋實走受影響流程；完工回報附驗證入口（URL/步驟/測試資料）
 6. **提交** — 等使用者確認再 commit。Commit message 英文簡潔，一個 commit 一件事
-
-## Self-Improvement
-
-`Learning.md` 與 `Memory.md` 由 SessionStart hook 自動注入。被糾正 → 當場寫入 Learning.md；跨專案通用的教訓 → 依 `rules/maintenance.md` §3 提案升級。

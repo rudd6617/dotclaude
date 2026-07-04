@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Claude Code statusline — git branch · model · token usage · context usage
+# Claude Code statusline — cwd · git branch · model · token usage · context usage
 #
 # Input : session JSON on stdin
 #         https://code.claude.com/docs/en/statusline.md
@@ -53,6 +53,10 @@ IFS=$'\t' read -r model cwd tok_in tok_out ctx_max ctx_pct cost <<<"$(parse)"
 : "${model:=?}"; : "${cwd:=.}"
 : "${tok_in:=0}"; : "${tok_out:=0}"; : "${ctx_max:=200000}"; : "${ctx_pct:=0}"; : "${cost:=0}"
 
+# --- cwd: shorten $HOME to ~ ------------------------------------------------
+dir=$cwd
+case $dir in "$HOME"*) dir="~${dir#"$HOME"}";; esac
+
 # --- git branch (not in the JSON; ask git directly) ------------------------
 branch=$(git -C "$cwd" branch --show-current 2>/dev/null) \
   || branch=$(git -C "$cwd" rev-parse --short HEAD 2>/dev/null) \
@@ -73,7 +77,7 @@ price() {
 }
 
 # --- colours ----------------------------------------------------------------
-R=$'\033[0m'; CYAN=$'\033[36m'; MAGENTA=$'\033[35m'
+R=$'\033[0m'; CYAN=$'\033[36m'; MAGENTA=$'\033[35m'; BLUE=$'\033[34m'
 ctx_pct=${ctx_pct%.*}; ctx_pct=${ctx_pct:-0}
 if   [ "$ctx_pct" -ge 80 ]; then CTX=$'\033[31m'   # red
 elif [ "$ctx_pct" -ge 50 ]; then CTX=$'\033[33m'   # yellow
@@ -83,6 +87,7 @@ fi
 # --- compose (segments separated by spaces, no glyphs) ---------------------
 sep="   "
 out=""
+out+="${BLUE}${dir}${R}${sep}"
 [ -n "$branch" ] && out+="${CYAN}${branch}${R}${sep}"
 out+="${MAGENTA}${model}${R}"
 out+="${sep}↑$(human "$tok_in") ↓$(human "$tok_out")"

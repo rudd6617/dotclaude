@@ -43,7 +43,9 @@
 | `/r-zoom-out` | 進入陌生模組前 | 建立全域視角（角色/邊界/數據流） |
 | `/r-grill` | 需求模糊、動工前 | 逐個 branch 質問對齊 |
 | `/r-grill-with-docs` | 需求模糊 + 涉及領域 / 想留決策紀錄 | grill + Wiki/ADR 維護 |
+| `/r-wayfinder` | 巨大模糊工程、一個 session 裝不下 | GitHub 決策地圖，逐票解到路徑清晰；只規劃不建構 |
 | `/r-plan` | 需求已對齊 + 涉及架構選擇 | 收斂為四段方案 |
+| `/r-ticket` | 需求已對齊、要拆成可獨立交付的切片 | 產出 GitHub spec issue + tracer-bullet 子票（含阻塞順序） |
 | `/r-diagnose` | bug / 異常行為 / 測試失敗 / 效能退化 | 6 階段除錯 |
 | `/r-review` | 完工後 / 讀不熟代碼 | 4 段品質評估 |
 | `/r-multi-review` | 定稿前、怕幻覺/漏需求 | 多模型接地＋對抗審，分歧交你裁決 |
@@ -57,6 +59,8 @@
 - 簡單（單檔、無架構選擇）：直接做
 - 中等（2–3 檔、無架構取捨）：`/r-grill` → 動工 → `/r-review`
 - 複雜（≥4 檔 或 有架構取捨 或 不可逆）：`/r-grill-with-docs` → `/r-plan` → 動工 → `/r-review`
+- GitHub ticket 流程（多切片）：`/r-grill`（或 `/r-plan`）→ `/r-ticket` → 逐票走「實作段」→ 關 issue
+- 巨大模糊工程（多 session）：`/r-wayfinder`（畫地圖 / 逐票解決策）→ 霧散後 `/r-ticket` → 逐票實作
 - 出 bug：`/r-diagnose`
 - 中後期回顧：`/r-deepen`
 - 對話收尾：`/r-handoff`
@@ -80,6 +84,8 @@ IMPORTANT: 所有程式碼變更必須經過我確認後才可以執行。提出
 4. **實作** — 寫最笨但最清晰的代碼。避免過度抽象和過度設計
 5. **驗證** — 跑測試、typecheck、lint。確保零破壞性
 6. **提交** — 等我確認後再 commit
+
+跑 ticket 流程時，每張票獨立走這條迴圈：抓一張 `ready-for-agent` 票 → 實作段（4–6）→ `/r-review` → commit → `gh issue close`，票與票之間清空 context。
 
 ## Git Conventions
 - Commit message 用英文，簡潔明確

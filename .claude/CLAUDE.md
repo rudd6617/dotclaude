@@ -25,7 +25,7 @@
 | `.claude/Memory.md` | 當前進展、待辦、下次入口、建議 skill（揮發狀態，**gitignore**） | 對話收尾（`/r-handoff`）或進度變動時 |
 | `.claude/Learning.md` | 重複出現的失敗模式 / 教訓（單檔） | 被糾正且推測會再犯時 |
 | `.claude/Wiki.md` | 長期知識：項目背景、技術棧、目錄結構、API、業務口徑、術語 | 對齊術語 / 解析新概念時 |
-| `docs/adr/NNNN-*.md` | 架構決策（為什麼選 X 而非 Y） | 三條件全成立時建（見 ADR 機制段） |
+| `docs/adr/NNNN-*.md` | 架構決策（為什麼選 X 而非 Y） | 三條件全成立時建（見 `docs/ADR-FORMAT.md`） |
 | `.out-of-scope/*.md` | 明確拒絕的提議（為什麼不做 X） | 同樣的提議可能再被提出時 |
 
 語義分界：
@@ -64,12 +64,7 @@
 
 ## ADR 機制
 
-三條件**全成立**才建 ADR：
-1. **Hard to reverse** — 改回去成本高
-2. **Surprising without context** — 未來讀者會問「為什麼這樣做」
-3. **Real trade-off** — 真有替代方案
-
-格式見 `docs/ADR-FORMAT.md`，目錄說明見 `docs/adr/README.md`。
+三條件（hard to reverse / surprising without context / real trade-off）全成立才建。判準、什麼算、格式，全部見 `docs/ADR-FORMAT.md`；目錄說明見 `docs/adr/README.md`。
 
 ## Workflow
 

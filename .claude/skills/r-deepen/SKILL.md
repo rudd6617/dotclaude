@@ -29,7 +29,11 @@ Deepen: $ARGUMENTS
 ## 流程
 
 ### 1. Explore
-（若有內容）讀 `.claude/Wiki.md`（術語/目錄結構段）與 `docs/adr/`。用 Agent (subagent_type=Explore) 走 codebase。記摩擦點：
+（若有內容）讀 `.claude/Wiki.md`（術語/目錄結構段）與 `docs/adr/`。
+
+**先找 hot spot 再掃**：`git log --oneline -50` 看最近改動集中在哪些區域，優先掃那裡。架構摩擦會表現為「同一區反覆被改」；均勻掃 codebase 會把預算花在穩定不動的代碼上。
+
+用 Agent (subagent_type=Explore) 走選定區域。記摩擦點：
 - 理解一個概念要在多個小 module 間跳轉
 - Module 太淺（介面幾乎等於實作）
 - 為測試抽 pure function，但真 bug 藏在呼叫鏈裡（locality 差）
@@ -40,10 +44,15 @@ Deepen: $ARGUMENTS
 
 ### 2. Present Candidates
 列編號的深化機會。每項：
+- **強度** — `Strong`（我真的建議做）/ `Worth exploring`（值得談，但取捨不明顯）/ `Speculative`（只是列出來，證據薄）
 - **Files** — 涉及檔案
 - **Problem** — 架構摩擦
 - **Solution** — 白話說改什麼
 - **Benefits** — 用 locality / leverage / 可測性說明
+
+強度要有分佈。全部標 `Strong` 等於沒標——那是你證據不足卻假裝有把握。
+
+候選 ≥5 個、或問題涉及跨模組關係（依賴方向、seam 位置、資料流）時，呼叫 `/r-eli5` 把候選圖示化——文字清單講不清「誰依賴誰」。
 
 不要先提介面設計。問用戶：「哪幾個你想推進？」
 

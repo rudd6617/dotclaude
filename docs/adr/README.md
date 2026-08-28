@@ -4,12 +4,7 @@
 
 ## 何時建立 ADR
 
-三條件**全部成立**才建：
-1. **Hard to reverse** — 改回去成本高
-2. **Surprising without context** — 未來讀者會問「為什麼這樣做」
-3. **Real trade-off** — 真有替代方案被排除，不是顯而易見的選擇
-
-任一條件不成立，不建。
+三條件全部成立才建，判準與「什麼算」的例子見 [../ADR-FORMAT.md](../ADR-FORMAT.md)。
 
 ## 命名規則
 

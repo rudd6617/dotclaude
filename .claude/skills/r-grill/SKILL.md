@@ -76,15 +76,9 @@ _Avoid_: Client, Buyer, Account
 
 ### 提議 ADR
 
-**觸發條件**：三條件**全部成立**——
+**觸發條件**：三條件**全部成立**——hard to reverse / surprising without context / real trade-off。任一不成立，跳過。
 
-1. **Hard to reverse** — 改回去成本高
-2. **Surprising without context** — 未來讀者會問「為什麼這樣做」
-3. **Real trade-off** — 真有替代方案
-
-任一不成立，跳過。易回退的決定不必記——反正會回退；不意外的決定沒人會問為什麼；沒有真替代方案的決定，除了「我們做了顯而易見的事」沒東西可記。
-
-什麼算 ADR 與格式見 `docs/ADR-FORMAT.md`，新增 ADR 寫入 `docs/adr/NNNN-*.md`。
+判準展開、什麼算 ADR、格式，全部見 `docs/ADR-FORMAT.md`；新增 ADR 寫入 `docs/adr/NNNN-*.md`。
 
 ## 何時停
 

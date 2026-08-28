@@ -24,7 +24,7 @@ Break into tickets: $ARGUMENTS
 從對話取材；若 `$ARGUMENTS` 給了 issue 編號/URL 或 plan 路徑，先讀進來。
 
 ### 2. 對照代碼
-掃相關檔案，用專案既有詞彙（`.claude/Wiki.md`）與既有決策（`docs/adr/`）。命名跟著代碼走，不自創。
+掃相關檔案，理解現狀（詞彙與 ADR 依專案級預設，見 CLAUDE.md）。
 
 順手找 **prefactor 機會**：先讓改動變容易，再做那個容易的改動（make the change easy, then make the easy change）。有的話排成第一張票。
 

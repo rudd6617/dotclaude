@@ -11,8 +11,6 @@ Diagnose: $ARGUMENTS
 
 跳過任一階段必須明示理由。
 
-探索代碼前先讀 `.claude/Wiki.md`（若有內容）與相關區域的 `docs/adr/`，建立正確的模組心智模型。
-
 ## Redact
 
 這個 skill 會叫你貼出指令、輸出、擷取到的 artifact。**先遮蔽每一個 secret**，原處寫 `<REDACTED>`。feedback loop 對著環境變數建，讓憑證留在環境裡而不是留在你貼出的內容裡。擷取的 artifact（HAR、request dump）帶 auth header：只引有訊號的那幾行。

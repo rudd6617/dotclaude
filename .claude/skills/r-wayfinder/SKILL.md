@@ -74,7 +74,7 @@ Wayfinder: $ARGUMENTS
 | 票種 | 模式 | 用在 | 怎麼解 |
 |---|---|---|---|
 | `research` | AFK | 需要當前工作目錄之外的知識：文件、第三方 API、外部資料 | 派 subagent 平行查，findings 回貼票上 |
-| `grilling` | **HITL** | 設計決策——**預設就是這種** | `/r-grill`，涉及領域詞彙/決策紀錄用 `/r-grill-with-docs` |
+| `grilling` | **HITL** | 設計決策——**預設就是這種** | `/r-grill`（它會在術語被解析、或 ADR 三條件成立時順帶維護 Wiki/ADR） |
 | `task` | HITL 或 AFK | 決策前非得先發生的**人工動作**：註冊服務才能評 API、開權限、搬資料才看得到形狀 | 能自己做就自己做；否則給我一張精確 checklist。答案記「做了什麼」與後續票依賴的事實（憑證放哪、新 URL、資料筆數） |
 
 `task` 是唯一「做事」而非「決策」的票種，它的正當性來自**解鎖一個決定**，不是交付終點。
@@ -95,7 +95,7 @@ Out of scope **永不畢業**（frontier 停在 destination）；除非重畫 de
 
 ## 模式 A：畫地圖（$ARGUMENTS 是想法）
 
-1. **命名終點**：用 `/r-grill` 或 `/r-grill-with-docs` 逼出「做完長什麼樣」。destination 定住了範圍，所以先定它。
+1. **命名終點**：用 `/r-grill` 逼出「做完長什麼樣」。destination 定住了範圍，所以先定它。
 2. **鋪開邊界**：再 grill 一次，這次 **breadth-first**——橫向掃過整個空間，不在任何一條線上深挖，撈出所有未定決策與現在就能動的第一步。**若這步撈不出 fog**（路徑已清晰、整趟一個 session 裝得下），就不需要地圖：停下來問我怎麼走。
 3. **建 map issue**（貼 `wayfinder:map` 標籤）：Destination 與 Notes 寫滿，Decisions so far 留空，fog 草寫進 Not yet specified。
 4. **開現在就能明確化的票**（標好票種），**第二輪**再接阻塞邊（issue 要先有 id 才能互相引用）。接完邊自然分出 frontier 與 blocked；還不能明確化的留在 Not yet specified。

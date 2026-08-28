@@ -25,13 +25,18 @@ Personal Claude Code template — development principles, custom skills, hooks, 
     │   └── inject-memory.sh      # Auto-inject Learning + Memory; nudge /r-dreaming past threshold
     └── skills/
         ├── r-zoom-out/SKILL.md         # /r-zoom-out — map an unfamiliar module
-        ├── r-grill/SKILL.md            # /r-grill — pre-implementation alignment
-        ├── r-grill-with-docs/SKILL.md  # /r-grill-with-docs — alignment + Wiki/ADR
+        ├── r-grill/SKILL.md            # /r-grill — alignment in frontier rounds (+ Wiki/ADR upkeep)
+        ├── r-wayfinder/SKILL.md        # /r-wayfinder — decision map for multi-session efforts
         ├── r-plan/SKILL.md             # /r-plan — architecture planning (4 sections)
-        ├── r-diagnose/SKILL.md         # /r-diagnose — 6-phase debugging
+        ├── r-ticket/SKILL.md           # /r-ticket — spec issue + tracer-bullet slices
+        ├── r-diagnose/SKILL.md         # /r-diagnose — 6-phase debugging (+ HITL loop template)
         ├── r-review/SKILL.md           # /r-review — single-file/PR quality check
+        ├── r-multi-review/SKILL.md     # /r-multi-review — multi-model grounded + adversarial review
+        ├── r-design/SKILL.md           # /r-design — frontend design anti-pattern checklist
         ├── r-deepen/SKILL.md           # /r-deepen — codebase-level refactor opportunities
+        ├── r-eli5/SKILL.md             # /r-eli5 — explain to an outsider, big pictures few words
         ├── r-handoff/SKILL.md          # /r-handoff — compact conversation into Memory.md
+        ├── r-dreaming/SKILL.md         # /r-dreaming — converge Learning.md
         └── r-teach/SKILL.md            # /r-teach — turn the workspace into a teaching environment
 ```
 
@@ -39,19 +44,16 @@ Personal Claude Code template — development principles, custom skills, hooks, 
 
 Encoded in `.claude/CLAUDE.md`:
 
-1. **Data structures first** — design the data, then write the logic
-2. **Eliminate special cases** — reshape data instead of adding branches
-3. **Max 3 levels of indentation** — functions do one thing
-4. **Never break existing behavior** — list impact before changing
-5. **Solve real problems** — complexity must match severity
-6. **Early return, fail fast** — errors surface immediately
-7. **Name the intent** — names say *what*, not *how*
-8. **Conservative dependencies** — stdlib over third-party
-9. **Test-first bug fixes** — write a failing test before fixing; missing test seam is itself an architectural finding
-10. **Isolate cross-file refactors** — use git worktree
-11. **Touch only what's necessary** — no drive-by refactor / formatting / docstring
-12. **Ask when ambiguous** — list options, don't silently pick
-13. **Output is an interface** — structure replies for the reader's decision: conclusion first, tables over walls of prose, claims backed by evidence
+1. **Programming taste** — design the data then the logic; reshape data instead of adding branches; max 3 levels of indentation, functions do one thing; names say *what*, not *how*
+2. **Never break existing behavior** — list impact before changing
+3. **Solve real problems** — complexity must match severity
+4. **Early return, fail fast** — errors surface immediately, no defensive try-catch
+5. **Conservative dependencies** — stdlib over third-party
+6. **Test-first bug fixes** — write a failing test before fixing; missing test seam is itself an architectural finding
+7. **Isolate cross-file refactors** — ask about a git worktree first
+8. **Touch only what's necessary** — no drive-by refactor / formatting / docstring
+9. **Ask when ambiguous** — list options, don't silently pick
+10. **Output is an interface** — conclusion first, tables over walls of prose, claims backed by evidence
 
 ## Document Roles
 
@@ -68,18 +70,25 @@ Encoded in `.claude/CLAUDE.md`:
 
 | Skill | Trigger | Purpose |
 |---|---|---|
-| `/r-grill` | Requirements are fuzzy | One-question-at-a-time alignment |
-| `/r-grill-with-docs` | Domain decisions need to be recorded | grill + Wiki/ADR maintenance |
+| `/r-zoom-out` | Entering an unfamiliar module | Global view: roles, boundaries, data flow |
+| `/r-grill` | Requirements are fuzzy | Frontier rounds: ask every answerable question, recompute; keeps Wiki/ADR current when terms resolve |
+| `/r-wayfinder` | Effort too big for one session | Decision map of tickets on GitHub, resolved one at a time |
 | `/r-plan` | Architecture or multi-file changes (after alignment) | Data flow, complexity, risks, go/no-go |
+| `/r-ticket` | Aligned work needs independently shippable slices | Spec issue + tracer-bullet tickets with blocking order |
 | `/r-diagnose` | Bug, regression, test failure, perf issue | 6-phase loop: feedback loop → reproduce → hypothesise → instrument → fix → post-mortem |
 | `/r-review` | Single file or PR | Taste rating, fatal issues, complexity, data structures |
+| `/r-multi-review` | Before finalizing; hallucinations would be costly | Two blind grounded verifiers + an adversarial refuter |
+| `/r-design` | Building or reviewing frontend UI | Anti-pattern checklist against AI-looking design |
 | `/r-deepen` | Codebase-level architecture review | Find shallow modules, weak seams, locality issues |
+| `/r-eli5` | Explaining something to an outsider | HTML artifact: big pictures, very few words |
+| `/r-handoff` | End of a long session / before compaction | Compact into `.claude/Memory.md` |
+| `/r-dreaming` | `Learning.md` past the threshold | Merge, promote to principles, retire stale entries |
 | `/r-teach` | You want to learn a new concept or skill | Teaching workspace: storage strength, ZPD, cite high-trust sources |
 
 Typical flows:
 - Simple: just do it
 - Medium: `/r-grill` → implement → `/r-review`
-- Complex: `/r-grill-with-docs` → `/r-plan` → implement → `/r-review`
+- Complex: `/r-grill` → `/r-plan` → implement → `/r-review`
 - Bug: `/r-diagnose`
 - Periodic: `/r-deepen`
 

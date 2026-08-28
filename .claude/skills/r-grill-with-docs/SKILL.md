@@ -30,13 +30,32 @@ Grill-with-docs: $ARGUMENTS
 ### 即時更新 Wiki.md 術語段
 術語解析時**當下**更新 `.claude/Wiki.md` 的術語段，不批次累積。只放領域專家關心的概念，不放實作細節。
 
+寫法（**要有主張**：同一概念有多個說法時挑一個最好的，其餘列進 `_Avoid_` 明確拒絕）：
+
+```md
+**Order**：
+客戶下的一筆採購請求，成立後即進入履約流程。
+_Avoid_: Purchase, Transaction
+
+**Customer**：
+下單的個人或組織。
+_Avoid_: Client, Buyer, Account
+```
+
+- 定義要**緊**：一到兩句，講它**是什麼**，不講它做什麼。
+- 只收**這個專案領域特有**的術語。通用程式概念（timeout、error type、utility pattern）不進來，即使專案大量使用。加之前先問：這是本領域獨有的概念，還是通用程式概念？只有前者該進。
+- 術語自然叢聚時用子標題分組；同一區塊則平鋪即可。
+- **用語模糊處明確標註解法**：「本專案的『取消』一律指整單取消；部分退貨另立術語」。
+
 ### 觸發 ADR（節制）
 僅在三條件**全部成立**時提議建 ADR：
 1. **Hard to reverse** — 改回去成本高
 2. **Surprising without context** — 未來讀者會問「為什麼這樣做」
 3. **Real trade-off** — 真有替代方案
 
-任一不成立，跳過。格式見 `docs/ADR-FORMAT.md`，新增 ADR 寫入 `docs/adr/NNNN-*.md`。
+任一不成立，跳過。易回退的決定不必記——反正會回退；不意外的決定沒人會問為什麼；沒有真替代方案的決定，除了「我們做了顯而易見的事」沒東西可記。
+
+什麼算 ADR 與格式見 `docs/ADR-FORMAT.md`，新增 ADR 寫入 `docs/adr/NNNN-*.md`。
 
 ## 何時停
 

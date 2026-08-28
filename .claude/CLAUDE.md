@@ -25,7 +25,7 @@
 | 檔案 | 內容 | 何時建/更新 |
 |---|---|---|
 | `.claude/CLAUDE.md` | 行為規則、原則、流程指引、穩定用戶偏好 | 規則改變時 |
-| `.claude/Memory.md` | 當前進展、待辦、下次入口（揮發狀態，**gitignore**） | 對話收尾（`/r-handoff`）或進度變動時 |
+| `.claude/Memory.md` | 當前進展、待辦、下次入口、建議 skill（揮發狀態，**gitignore**） | 對話收尾（`/r-handoff`）或進度變動時 |
 | `.claude/Learning.md` | 重複出現的失敗模式 / 教訓（單檔） | 被糾正且推測會再犯時 |
 | `.claude/Wiki.md` | 長期知識：項目背景、技術棧、目錄結構、API、業務口徑、術語 | 對齊術語 / 解析新概念時 |
 | `docs/adr/NNNN-*.md` | 架構決策（為什麼選 X 而非 Y） | 三條件全成立時建（見 ADR 機制段） |
@@ -41,7 +41,7 @@
 | Skill | 時機 | 用法 |
 |---|---|---|
 | `/r-zoom-out` | 進入陌生模組前 | 建立全域視角（角色/邊界/數據流） |
-| `/r-grill` | 需求模糊、動工前 | 逐個 branch 質問對齊 |
+| `/r-grill` | 需求模糊、動工前 | 一輪問完可答的 frontier，逐輪收斂 |
 | `/r-grill-with-docs` | 需求模糊 + 涉及領域 / 想留決策紀錄 | grill + Wiki/ADR 維護 |
 | `/r-wayfinder` | 巨大模糊工程、一個 session 裝不下 | GitHub 決策地圖，逐票解到路徑清晰；只規劃不建構 |
 | `/r-plan` | 需求已對齊 + 涉及架構選擇 | 收斂為四段方案 |
@@ -53,6 +53,7 @@
 | `/r-deepen` | codebase 級架構回顧 | 找深化機會 |
 | `/r-handoff` | 長對話收尾 / context 壓縮前 | 壓成交接、更新 `.claude/Memory.md` |
 | `/r-teach` | 想學新概念 / 技能（非 dev 主流程） | 建教學工作區，依 storage strength + ZPD 教學 |
+| `/r-eli5` | 要把某個東西解釋給外行 / 主管 / 同事 | 大圖極少字的 HTML artifact，一次性不留檔 |
 
 典型流程：
 - 陌生代碼：`/r-zoom-out` → 後續

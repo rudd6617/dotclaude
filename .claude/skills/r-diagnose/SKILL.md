@@ -11,6 +11,14 @@ Diagnose: $ARGUMENTS
 
 跳過任一階段必須明示理由。
 
+探索代碼前先讀 `.claude/Wiki.md`（若有內容）與相關區域的 `docs/adr/`，建立正確的模組心智模型。
+
+## Redact
+
+這個 skill 會叫你貼出指令、輸出、擷取到的 artifact。**先遮蔽每一個 secret**，原處寫 `<REDACTED>`。feedback loop 對著環境變數建，讓憑證留在環境裡而不是留在你貼出的內容裡。擷取的 artifact（HAR、request dump）帶 auth header：只引有訊號的那幾行。
+
+遮蔽後的輸出不足以診斷時，明說並向用戶要。
+
 ## Phase 1 — 建立 feedback loop
 
 **這就是技能本身**。有快速、deterministic、agent-runnable 的 pass/fail 訊號，bug 就找得到；沒有，看再多代碼也救不了。不擇手段建立。
@@ -25,13 +33,24 @@ Diagnose: $ARGUMENTS
 7. Property / fuzz loop — 「有時錯」跑 1000 隨機 input
 8. Bisection harness — 自動化 git bisect run
 9. Differential loop — 同 input 跑舊版 vs 新版
-10. **HITL bash script** — 最後手段。把人類點擊步驟包成可重複腳本，讓人類照腳本執行，輸出回流到你
+10. **HITL bash script** — 最後手段。非得有人類點擊時，用 `scripts/hitl-loop.template.sh` 驅動**他**，讓 loop 仍然結構化；擷取的輸出回流到你
 
 把 loop 當產品迭代：更快、更鋒利、更 deterministic。2 秒 deterministic loop 是除錯超能力。
 
 非確定性 bug 目標是**提高重現率**，不是乾淨重現。1% flake 不行，先拉到 50%。
 
-真的建不出：明說，列已試方法，要重現環境 / artifact / production instrumentation 許可。**沒 loop 不進 Phase 2。**
+真的建不出：明說，列已試方法，要重現環境 / 遮蔽過的 artifact / production instrumentation 許可。**沒 loop 不進 Phase 2。**
+
+### 完成判準：一個會變紅的 tight loop
+
+Phase 1 完成 = 你能指出**一個指令**（腳本路徑 / test 呼叫 / curl），而且**你已經至少跑過一次**——貼出 invocation 與輸出（已遮蔽）——並滿足：
+
+- [ ] **會變紅** — 走的是 bug 真正的代碼路徑，斷言的是**用戶描述的那個確切症狀**；不是「跑起來沒炸」，而是**抓得到這個 bug**，修好後會變綠
+- [ ] **Deterministic** — 每次跑同一個結論（非確定性 bug：重現率已拉高並固定）
+- [ ] **快** — 秒級，不是分鐘級
+- [ ] **Agent-runnable** — 你能無人看顧地跑；要人類介入只能透過 `scripts/hitl-loop.template.sh`
+
+發現自己在這個指令存在之前就讀代碼建理論——**停**：直接跳到假設正是這個 skill 要防的失敗模式。
 
 ## Phase 2 — 重現
 

@@ -35,13 +35,16 @@ high-trust external sources first, and cite them liberally.
 Create these as needed in the current workspace:
 
 - `MISSION.md` — the learner's real-world reason for studying. Grounds everything.
+  Format: [MISSION-FORMAT.md](./MISSION-FORMAT.md).
 - `RESOURCES.md` — curated, high-trust external references.
+  Format: [RESOURCES-FORMAT.md](./RESOURCES-FORMAT.md).
 - `NOTES.md` — learner preferences and teaching adjustments (session continuity).
 - `./lessons/*.html` — self-contained, sequentially numbered lessons, one tightly
   scoped concept each.
 - `./reference/*.html` — scan-friendly cheat sheets: glossaries, syntax, algorithms.
 - `./learning-records/*` — ADR-style notes capturing non-obvious insights and ZPD
-  adjustments.
+  adjustments. Format, and when one qualifies:
+  [LEARNING-RECORD-FORMAT.md](./LEARNING-RECORD-FORMAT.md).
 - `./assets/*` — reusable components (shared stylesheet, quizzes, simulators).
 
 Number artifacts sequentially per type: `0001-`, `0002-`, …
@@ -95,9 +98,13 @@ engagement (record it in `NOTES.md`).
 
 ## Reference documents
 
-Create a glossary early — it anchors terminology across all lessons. Reference
-docs are for repeated lookup, not reading start-to-finish: keep them scan-friendly
-(syntax, algorithms, sequences, exercises).
+Create a glossary early — it anchors terminology across all lessons, and building
+it is itself part of learning. Follow
+[GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md); in particular, **a term is promoted
+only once the learner can use it correctly**, not when it is introduced.
+
+Other reference docs are for repeated lookup, not reading start-to-finish: keep
+them scan-friendly (syntax, algorithms, sequences, exercises).
 
 ## Assets — reuse is mandatory
 
@@ -115,3 +122,6 @@ every workspace so all lessons look consistent.
 6. Use retrieval practice; keep quiz options uniform length.
 7. Update `MISSION.md` on scope shifts; log it in `learning-records/`.
 8. Record preferences in `NOTES.md` for session continuity.
+9. Follow the four `*-FORMAT.md` files in this skill directory for `MISSION.md`,
+   `RESOURCES.md`, the glossary, and learning records. They carry the
+   non-obvious judgment calls — read the relevant one before writing that file.

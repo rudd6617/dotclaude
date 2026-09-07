@@ -151,7 +151,7 @@ return { r1, r2, surviving, falseClaims: [...falseClaims] }
 ## Phase 3 — 停止與迭代
 
 - 某輪**零 verified issue**（CONFIRMED 為空且無 DISPUTED）→ 立即回報「通過」，停。
-- 有 CONFIRMED → 提修法，**等用戶確認才改**（符合 CLAUDE.md workflow）。改完想重審 → 重跑本 skill，**最多 3 個 pass**。迭代由用戶 gate，不自走。
+- 有 CONFIRMED → 提修法，**等用戶確認才改**（符合 `AGENTS.md` workflow）。改完想重審 → 重跑本 skill，**最多 3 個 pass**。迭代由用戶 gate，不自走。
 
 ## 守則
 

@@ -6,6 +6,7 @@ Personal Claude Code template — development principles, custom skills, hooks, 
 
 ```
 .
+├── AGENTS.md                     # House rules — principles, modes, workflow, git. Tool-agnostic; every agent reads this
 ├── sync.sh                       # Push template updates into another project (overwrite managed, keep yours)
 ├── docs/
 │   ├── ADR-FORMAT.md             # ADR template
@@ -16,7 +17,7 @@ Personal Claude Code template — development principles, custom skills, hooks, 
 │   └── letter-to-future-sessions.md      # Read once per new machine/major model change
 ├── .out-of-scope/                # Rejected proposals (why NOT to do X)
 └── .claude/
-    ├── CLAUDE.md                 # Principles, file/skill mapping, workflow
+    ├── CLAUDE.md                 # Claude-only layer: skill routing, hooks. First line `@../AGENTS.md` pulls in the house rules
     ├── Wiki.md                   # Long-term knowledge: background, stack, dirs, API, glossary
     ├── Memory.md                 # Volatile session state — where to pick up (gitignored)
     ├── Learning.md               # Accumulated mistakes & lessons (auto-injected)
@@ -25,7 +26,7 @@ Personal Claude Code template — development principles, custom skills, hooks, 
     ├── launch.json               # Editor launch config
     ├── statusline.sh             # Status bar (lives here only — NOT synced; global settings point at it)
     ├── hooks/
-    │   └── inject-memory.sh      # Auto-inject Learning + Memory; nudge /r-dreaming past threshold
+    │   └── inject-memory.sh      # Auto-inject Learning + Memory; nudge a convergence pass past threshold
     └── skills/
         ├── r-zoom-out/SKILL.md         # /r-zoom-out — map an unfamiliar module
         ├── r-grill/SKILL.md            # /r-grill — alignment in frontier rounds (+ Wiki/ADR upkeep)
@@ -39,14 +40,13 @@ Personal Claude Code template — development principles, custom skills, hooks, 
         ├── r-deepen/SKILL.md           # /r-deepen — codebase-level refactor opportunities
         ├── r-eli5/SKILL.md             # /r-eli5 — explain to an outsider, big pictures few words
         ├── r-handoff/SKILL.md          # /r-handoff — compact conversation into Memory.md
-        ├── r-dreaming/SKILL.md         # /r-dreaming — converge Learning.md
         ├── r-audit/SKILL.md            # /r-audit — harness health check: doc-vs-reality + pain mining
         └── r-teach/SKILL.md            # /r-teach — turn the workspace into a teaching environment
 ```
 
 ## Core Principles
 
-Encoded in `.claude/CLAUDE.md`:
+Encoded in `AGENTS.md`:
 
 1. **Programming taste** — design the data then the logic; reshape data instead of adding branches; max 3 levels of indentation, functions do one thing; names say *what*, not *how*
 2. **Never break existing behavior** — list impact before changing
@@ -65,13 +65,25 @@ Encoded in `.claude/CLAUDE.md`:
 
 | File | Purpose | When |
 |---|---|---|
-| `.claude/CLAUDE.md` | Rules, process, stable preferences | Rules change (edit in this repo, then sync) |
+| `AGENTS.md` | **House rules** — principles, modes, workflow, git conventions. Tool-agnostic: Claude, Codex, Gemini all read it | Rules change (edit in this repo, then sync) |
+| `.claude/CLAUDE.md` | Claude-only layer: skill routing, hook mechanics. Imports `AGENTS.md` on its first line | Claude-specific mechanics change |
 | `docs/MAINTENANCE.md` | Edit zones, proposal format, sync discipline for institutional files | Before editing CLAUDE.md / skills / hooks |
 | `.claude/Memory.md` | Volatile session state — where to pick up (gitignored) | End of session (`/r-handoff`) or progress changes |
 | `.claude/Learning.md` | Recurring failure patterns & lessons | You got corrected and it could happen again |
 | `.claude/Wiki.md` | Long-term knowledge: background, stack, dirs, API, glossary | Aligning on a term / resolving a new concept |
 | `docs/adr/NNNN-*.md` | Architecture decisions (why X not Y) | All three ADR conditions hold |
 | `.out-of-scope/*.md` | Rejected proposals (why NOT to do X) | The same proposal could resurface |
+
+## Why the rules live in two files
+
+Claude Code only reads `CLAUDE.md`; Codex only reads `AGENTS.md`; Gemini CLI only reads `GEMINI.md` unless reconfigured. Those filenames are hardcoded per tool, so one file can never serve all of them.
+
+So the rules split by **audience, not by tool**:
+
+- **`AGENTS.md`** — everything tool-agnostic. Codex and friends read it directly; Claude Code pulls it in via `@../AGENTS.md` on the first line of `.claude/CLAUDE.md` (verified: relative imports resolve against the importing file, max 4 hops deep).
+- **`.claude/CLAUDE.md`** — only what is Claude-specific: the `/r-*` skill table and the SessionStart hook.
+
+Roles are **not** baked into either file. `AGENTS.md` carries a short **Modes** section instead — *default mode* (serving the user directly: read Memory/Learning, confirm before changing code) and *reviewer mode* (dispatched to audit code: read none of that, no edits, no commits). The dispatcher names the mode in its prompt, e.g. *"review X in reviewer mode per AGENTS.md"*. `codex exec` and `codex review` auto-load the project's root `AGENTS.md` on every call, so nothing else has to be wired up. Add a mode by adding a short subsection — not a new directory.
 
 ## Custom Skills
 
@@ -89,7 +101,6 @@ Encoded in `.claude/CLAUDE.md`:
 | `/r-deepen` | Codebase-level architecture review | Find shallow modules, weak seams, locality issues |
 | `/r-eli5` | Explaining something to an outsider | HTML artifact: big pictures, very few words |
 | `/r-handoff` | End of a long session / before compaction | Compact into `.claude/Memory.md` |
-| `/r-dreaming` | `Learning.md` past the threshold | Merge, promote to principles, retire stale entries |
 | `/r-audit` | Periodic / after big institutional changes | Doc-vs-reality audit + pain mining; findings carry verification commands, fixes only after approval |
 | `/r-teach` | You want to learn a new concept or skill | Teaching workspace: storage strength, ZPD, cite high-trust sources |
 
@@ -104,7 +115,7 @@ Typical flows:
 
 1. **SessionStart hook** runs `inject-memory.sh` — injects `.claude/Learning.md` and `.claude/Memory.md` as system context
 2. When Claude gets corrected, the lesson is appended to `.claude/Learning.md` (one `##` heading per lesson)
-3. When `Learning.md` grows past the threshold (≥40 entries / ≥400 lines), the hook nudges you to run `/r-dreaming` to converge — merge duplicates, promote recurring lessons into CLAUDE.md, prune stale entries
+3. When `Learning.md` grows past the threshold (≥40 entries / ≥400 lines), the hook nudges a convergence pass — merge duplicates, promote recurring lessons into `AGENTS.md` principles, prune stale entries (criteria in `docs/MAINTENANCE.md` §4)
 4. `/r-handoff` compacts the conversation into `Memory.md` so the next session picks up where you left off
 
 ADRs in `docs/adr/` are loaded on demand (not auto-injected) — they record one-shot decisions, not recurring patterns.
@@ -139,7 +150,7 @@ Then fill `.claude/Wiki.md` (stack, glossary, etc.) and add ADRs as decisions ar
 
 | | Files | On sync |
 |---|---|---|
-| **Template** | `CLAUDE.md`, `skills/`, `hooks/`, `settings.json`, `docs/ADR-FORMAT.md`, `docs/MAINTENANCE.md`, `docs/adr/README.md` | **Overwritten** (project overrides go in `settings.local.json`) |
+| **Template** | `AGENTS.md`, `CLAUDE.md`, `skills/`, `hooks/`, `settings.json`, `docs/ADR-FORMAT.md`, `docs/MAINTENANCE.md`, `docs/adr/README.md` | **Overwritten** (project overrides go in `settings.local.json`) |
 | **Project knowledge** | `Wiki.md`, `Learning.md` | **Seeded only if missing** — never clobbered |
 | **Volatile / local** | `Memory.md`, `settings.local.json` | **Untouched** |
 

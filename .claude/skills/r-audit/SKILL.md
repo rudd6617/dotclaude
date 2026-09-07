@@ -14,7 +14,7 @@ disable-model-invocation: true
 
 ## Phase 1 — 審計（只讀，不動任何檔案）
 
-1. **文件 vs 現實**：讀 CLAUDE.md、settings（專案＋`~/.claude/settings.json`）、hooks、skills，找兩類問題：
+1. **文件 vs 現實**：讀 `AGENTS.md`、`.claude/CLAUDE.md`、settings（專案＋`~/.claude/settings.json`）、hooks、skills，找兩類問題：
    - 互相矛盾：文件 A 說的規則和文件 B / 程式碼實際行為打架
    - 宣稱有但沒在跑：寫著「會自動 X」「跑 /某skill」，但 hook 不存在、路徑失效、或指向舊版檔案
 2. **痛點挖掘**：從 `~/.claude/projects/` 的 session log 挖使用者最常打斷、重複糾正的模式，附出現次數。
@@ -32,7 +32,7 @@ disable-model-invocation: true
 
 修復守則（濃縮自 prompt2 方法論）：
 - **改前查備份**：dotclaude working tree 要乾淨（git 即備份，不建 .bak）；模板管理檔一律改 dotclaude 源頭再 sync，不改專案內副本。
-- **新內容寫新檔**，CLAUDE.md 只放精簡路由；讀者是弱模型——規則要有觸發條件、判準、正反例，抽象口號不寫。
+- **新內容寫新檔**，`AGENTS.md` / `CLAUDE.md` 只放精簡路由；讀者是弱模型——規則要有觸發條件、判準、正反例，抽象口號不寫。
 - **隨做隨寫**：每完成一條立刻落檔並用該條的驗證指令自查通過，才做下一條。session 隨時可能中斷，已落檔的才算數。
 - **合併不堆疊**：新規則落檔前 grep 既有檔找同主題條目，能合併就合併，衝突就明寫哪條作廢。
 

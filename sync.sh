@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Sync this dotclaude template into a target project.
 #
-# Overwrites template-managed files (CLAUDE.md, rules, skills, hooks).
+# Overwrites template-managed files (AGENTS.md, CLAUDE.md, rules, skills, hooks).
 # Seeds project-specific files only if missing — never clobbers the knowledge
 # you fill in per project (Wiki.md, Learning.md). Leaves volatile/local files
 # untouched (Memory.md, settings.local.json).
@@ -29,6 +29,7 @@ DST="$(cd "$DST" && pwd)"
 
 # Template-managed → overwrite (single source of truth).
 MANAGED=(
+  "AGENTS.md"                  # 家規（工具無關規則源頭）；.claude/CLAUDE.md 靠 @../AGENTS.md 吸入
   ".claude/CLAUDE.md"
   ".claude/skills"
   ".claude/hooks"

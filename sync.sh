@@ -34,6 +34,7 @@ MANAGED=(
   ".claude/hooks"
   ".claude/settings.json"      # project-specific overrides go in settings.local.json
   "docs/ADR-FORMAT.md"
+  "docs/MAINTENANCE.md"
   "docs/adr/README.md"
 )
 # statusline.sh intentionally NOT synced: it lives in this repo only and the

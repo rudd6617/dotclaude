@@ -3,7 +3,7 @@ name: r-audit
 description: |
   Harness health check: find doc-vs-reality contradictions and claimed-but-dead automation,
   mine session logs for repeated user corrections, output findings with runnable verification
-  commands, then (after per-item user approval) apply fixes under r-fable maintenance zones.
+  commands, then (after per-item user approval) apply fixes under the maintenance zones in docs/MAINTENANCE.md.
   Run periodically, after big institutional changes, or when the harness feels off.
 disable-model-invocation: true
 ---
@@ -18,7 +18,7 @@ disable-model-invocation: true
    - 互相矛盾：文件 A 說的規則和文件 B / 程式碼實際行為打架
    - 宣稱有但沒在跑：寫著「會自動 X」「跑 /某skill」，但 hook 不存在、路徑失效、或指向舊版檔案
 2. **痛點挖掘**：從 `~/.claude/projects/` 的 session log 挖使用者最常打斷、重複糾正的模式，附出現次數。
-   這步讀取量大，**派唯讀 subagent**（見 `skills/r-fable/dispatch.md`；唯讀派工免確認），主對話只收結論。
+   這步讀取量大，**派唯讀 subagent**（唯讀派工免確認），主對話只收結論。
 3. **發現格式**（硬性）：每個發現一行——
    `現況 → 建議修法 → 驗證指令（grep/test ＋ 期望值）`
    **寫不出驗證指令的發現直接丟掉**，不得以「建議留意」形式混入。
@@ -28,7 +28,7 @@ disable-model-invocation: true
 ## Phase 2 — 修復（僅執行被核准的編號，一條一條做）
 
 前置：只有使用者逐條（或成批點名編號）核准後才進入。範圍受
-`skills/r-fable/maintenance.md` 分區管轄：綠區直接改、黃區用 §2 提案格式再確認一次、紅區必須使用者明確指示。
+`docs/MAINTENANCE.md` §1 分區管轄：綠區直接改、黃區用 §2 提案格式再確認一次、紅區必須使用者明確指示。
 
 修復守則（濃縮自 prompt2 方法論）：
 - **改前查備份**：dotclaude working tree 要乾淨（git 即備份，不建 .bak）；模板管理檔一律改 dotclaude 源頭再 sync，不改專案內副本。

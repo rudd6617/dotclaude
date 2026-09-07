@@ -9,6 +9,7 @@ Personal Claude Code template — development principles, custom skills, hooks, 
 ├── sync.sh                       # Push template updates into another project (overwrite managed, keep yours)
 ├── docs/
 │   ├── ADR-FORMAT.md             # ADR template
+│   ├── MAINTENANCE.md            # How institutional files get edited (zones, proposal format, sync)
 │   ├── adr/
 │   │   └── README.md             # When to write an ADR (three conditions)
 │   ├── harness-diagnosis-2026-07-04.md   # One-off audit: top harness weaknesses + evidence
@@ -26,12 +27,6 @@ Personal Claude Code template — development principles, custom skills, hooks, 
     ├── hooks/
     │   └── inject-memory.sh      # Auto-inject Learning + Memory; nudge /r-dreaming past threshold
     └── skills/
-        ├── r-fable/                    # /r-fable — institutional layer (2026-07-04 Fable session)
-        │   ├── SKILL.md                #   iron rules, session-start checklist, routing to booklets
-        │   ├── dispatch.md             #   model/subagent dispatch, escalation ladder
-        │   ├── judgment.md             #   done-definition, ask-or-decide, wrong-direction signals
-        │   ├── delegation-templates.md #   fill-in-the-blank subagent prompts
-        │   └── maintenance.md          #   green/yellow/red edit zones, rule lifecycle
         ├── r-zoom-out/SKILL.md         # /r-zoom-out — map an unfamiliar module
         ├── r-grill/SKILL.md            # /r-grill — alignment in frontier rounds (+ Wiki/ADR upkeep)
         ├── r-wayfinder/SKILL.md        # /r-wayfinder — decision map for multi-session efforts
@@ -63,28 +58,15 @@ Encoded in `.claude/CLAUDE.md`:
 8. **Touch only what's necessary** — no drive-by refactor / formatting / docstring
 9. **Ask when ambiguous** — list options, don't silently pick
 10. **Output is an interface** — conclusion first, tables over walls of prose, claims backed by evidence
-
-Plus four per-turn iron rules (confirm-before-edit, done-has-a-definition, correction-is-spec, commander-doesn't-grind) — packaged in the `/r-fable` skill together with the dispatch/judgment/delegation/maintenance booklets.
-
-## /r-fable — institutional layer (added 2026-07-04)
-
-`CLAUDE.md` keeps its original shape; the institutional layer lives in one skill, `/r-fable`, whose SKILL.md routes to booklets in the same directory:
-
-| Trigger | Booklet |
-|---|---|
-| Spawning subagents, choosing model, retry/escalation | `skills/r-fable/dispatch.md` |
-| Writing a delegation prompt | `skills/r-fable/delegation-templates.md` |
-| Is it done? Should I ask? Wrong direction? | `skills/r-fable/judgment.md` |
-| Editing CLAUDE.md / skills / hooks | `skills/r-fable/maintenance.md` |
-
-Evidence base: `docs/harness-diagnosis-2026-07-04.md` (session-log mining of ~600 user messages + config audit).
+11. **Done has a definition** — verification run (result pasted), effect seen with your own eyes, verification entry point given, audit-type tasks list checked vs unchecked; missing any one means reporting progress, not completion
+12. **A correction is a spec** — one observed symptom is a hard rule applied to every like case inside the current change; the same correction twice means the verification method is broken, fix that first
 
 ## Document Roles
 
 | File | Purpose | When |
 |---|---|---|
 | `.claude/CLAUDE.md` | Rules, process, stable preferences | Rules change (edit in this repo, then sync) |
-| `.claude/skills/r-fable/*.md` | Iron rules + dispatch / judgment / delegation / maintenance | Per `skills/r-fable/maintenance.md` |
+| `docs/MAINTENANCE.md` | Edit zones, proposal format, sync discipline for institutional files | Before editing CLAUDE.md / skills / hooks |
 | `.claude/Memory.md` | Volatile session state — where to pick up (gitignored) | End of session (`/r-handoff`) or progress changes |
 | `.claude/Learning.md` | Recurring failure patterns & lessons | You got corrected and it could happen again |
 | `.claude/Wiki.md` | Long-term knowledge: background, stack, dirs, API, glossary | Aligning on a term / resolving a new concept |
@@ -95,7 +77,6 @@ Evidence base: `docs/harness-diagnosis-2026-07-04.md` (session-log mining of ~60
 
 | Skill | Trigger | Purpose |
 |---|---|---|
-| `/r-fable` | Before delegating, claiming done, retrying, asking the user, or editing `.claude` files | Iron rules + dispatch, judgment, delegation templates, maintenance zones |
 | `/r-zoom-out` | Entering an unfamiliar module | Global view: roles, boundaries, data flow |
 | `/r-grill` | Requirements are fuzzy | Frontier rounds: ask every answerable question, recompute; keeps Wiki/ADR current when terms resolve |
 | `/r-wayfinder` | Effort too big for one session | Decision map of tickets on GitHub, resolved one at a time |
@@ -158,10 +139,10 @@ Then fill `.claude/Wiki.md` (stack, glossary, etc.) and add ADRs as decisions ar
 
 | | Files | On sync |
 |---|---|---|
-| **Template** | `CLAUDE.md`, `skills/`, `hooks/`, `settings.json`, `docs/ADR-FORMAT.md`, `docs/adr/README.md` | **Overwritten** (project overrides go in `settings.local.json`) |
+| **Template** | `CLAUDE.md`, `skills/`, `hooks/`, `settings.json`, `docs/ADR-FORMAT.md`, `docs/MAINTENANCE.md`, `docs/adr/README.md` | **Overwritten** (project overrides go in `settings.local.json`) |
 | **Project knowledge** | `Wiki.md`, `Learning.md` | **Seeded only if missing** — never clobbered |
 | **Volatile / local** | `Memory.md`, `settings.local.json` | **Untouched** |
 
 `.claude/Memory.md` is gitignored — it accumulates per-project as you work.
 
-Rule of thumb: never edit template-managed files inside a project — edit them here, commit, re-sync (details: `.claude/skills/r-fable/maintenance.md`).
+Rule of thumb: never edit template-managed files inside a project — edit them here, commit, re-sync (details: `docs/MAINTENANCE.md`).

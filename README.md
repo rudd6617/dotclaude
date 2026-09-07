@@ -19,7 +19,7 @@ Personal Claude Code template — development principles, custom skills, hooks, 
 └── .claude/
     ├── CLAUDE.md                 # Claude-only layer: skill routing, hooks. First line `@../AGENTS.md` pulls in the house rules
     ├── Wiki.md                   # Long-term knowledge: background, stack, dirs, API, glossary
-    ├── Memory.md                 # Volatile session state — where to pick up (gitignored)
+    ├── Memory.md                 # Volatile session state — where to pick up (gitignored in this repo; per-project choice)
     ├── Learning.md               # Accumulated mistakes & lessons (auto-injected)
     ├── settings.json             # Hooks (SessionStart memory injection)
     ├── settings.local.json       # Local permissions
@@ -68,7 +68,7 @@ Encoded in `AGENTS.md`:
 | `AGENTS.md` | **House rules** — principles, modes, workflow, git conventions. Tool-agnostic: Claude, Codex, Gemini all read it | Rules change (edit in this repo, then sync) |
 | `.claude/CLAUDE.md` | Claude-only layer: skill routing, hook mechanics. Imports `AGENTS.md` on its first line | Claude-specific mechanics change |
 | `docs/MAINTENANCE.md` | Edit zones, proposal format, sync discipline for institutional files | Before editing CLAUDE.md / skills / hooks |
-| `.claude/Memory.md` | Volatile session state — where to pick up (gitignored) | End of session (`/r-handoff`) or progress changes |
+| `.claude/Memory.md` | Volatile session state — where to pick up | End of session (`/r-handoff`) or progress changes |
 | `.claude/Learning.md` | Recurring failure patterns & lessons | You got corrected and it could happen again |
 | `.claude/Wiki.md` | Long-term knowledge: background, stack, dirs, API, glossary | Aligning on a term / resolving a new concept |
 | `docs/adr/NNNN-*.md` | Architecture decisions (why X not Y) | All three ADR conditions hold |
@@ -154,6 +154,6 @@ Then fill `.claude/Wiki.md` (stack, glossary, etc.) and add ADRs as decisions ar
 | **Project knowledge** | `Wiki.md`, `Learning.md` | **Seeded only if missing** — never clobbered |
 | **Volatile / local** | `Memory.md`, `settings.local.json` | **Untouched** |
 
-`.claude/Memory.md` is gitignored — it accumulates per-project as you work.
+Whether `.claude/Memory.md` is version-controlled is **each project's call** — `sync.sh` never touches it and `.gitignore` is not synced. This repo ignores it; a project handed off across machines may commit it instead, at the cost of merge conflicts between parallel sessions. Check which you have with `git ls-files .claude/Memory.md`.
 
 Rule of thumb: never edit template-managed files inside a project — edit them here, commit, re-sync (details: `docs/MAINTENANCE.md`).

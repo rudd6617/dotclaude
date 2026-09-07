@@ -51,7 +51,7 @@ Gemini…）都讀這一份。Claude Code 只認 CLAUDE.md，所以 `.claude/CLA
 |---|---|---|
 | `AGENTS.md` | **家規**：原則、模式、流程、Git 慣例——工具無關，任何 agent 都讀 | 規則改變時 |
 | `.claude/CLAUDE.md` | Claude 專屬：skill 路由、hook 說明。第一行 `@../AGENTS.md` 吸入家規 | Claude 專屬機制改變時 |
-| `.claude/Memory.md` | 當前進展、待辦、下次入口、建議 skill（揮發狀態，**gitignore**） | 對話收尾或進度變動時 |
+| `.claude/Memory.md` | 當前進展、待辦、下次入口、建議 skill（揮發狀態；**是否進版控依專案定**——模板預設 gitignore，需跨機接手的專案改為進版控，代價是平行 session 會衝突。查現況：`git ls-files .claude/Memory.md`） | 對話收尾或進度變動時 |
 | `.claude/Learning.md` | 重複出現的失敗模式 / 教訓（單檔） | 被糾正且推測會再犯時 |
 | `.claude/Wiki.md` | 長期知識：項目背景、技術棧、目錄結構、API、業務口徑、術語 | 對齊術語 / 解析新概念時 |
 | `.claude/skills/<name>/SKILL.md` | 流程手冊（除錯、審查、規劃…）。Claude 用 slash command 觸發，其他 agent 按需自行閱讀 | 流程改變時 |

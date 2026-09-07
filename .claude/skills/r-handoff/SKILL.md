@@ -8,7 +8,7 @@ disable-model-invocation: true
 argument-hint: "[what the next session will focus on]"
 ---
 
-把當前對話壓成交接，**更新 `.claude/Memory.md`**（揮發狀態，已 gitignore）。覆蓋既有的「當前進展 / 待辦 / 下次入口 / 建議 skill」段，補充「已確認結論」。
+把當前對話壓成交接，**更新 `.claude/Memory.md`**（揮發狀態；是否進版控依專案定，查 `git ls-files .claude/Memory.md`）。覆蓋既有的「當前進展 / 待辦 / 下次入口 / 建議 skill」段，補充「已確認結論」。
 
 ## 寫入對應
 

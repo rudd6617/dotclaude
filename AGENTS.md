@@ -85,6 +85,7 @@ IMPORTANT: 所有程式碼變更必須經過使用者確認後才可以執行。
 
 - 動到代碼或寫票前，用 `.claude/Wiki.md` 的既有詞彙，並尊重相關區域的 `docs/adr/`。
 - 命名跟著代碼與 glossary 走，不自創同義詞。
+- 動測試、DB、建置前先看 `.claude/Wiki.md` 的 Commands 段——各專案的驗證分級與動線寫在那裡，不在本檔。
 
 ## Project Context
 

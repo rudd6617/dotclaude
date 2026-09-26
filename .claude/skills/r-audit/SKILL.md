@@ -9,8 +9,8 @@ disable-model-invocation: true
 ---
 
 哈奈斯健檢，兩階段：**審計（只讀）→ 裁決 → 修復（逐條）**。
-源頭一次性 prompt 見 `docs/fable-prompts/`；本 skill 是其可重複執行版。
-「全面重建制度」不在本 skill 範圍——那是強模型專屬一次性動作，用 `docs/fable-prompts/prompt2.md`。
+源頭一次性 prompt 見 `/Users/rudolfchen/Documents/dotclaude/docs/fable-prompts/`；本 skill 是其可重複執行版。
+「全面重建制度」不在本 skill 範圍——那是強模型專屬一次性動作，用 `/Users/rudolfchen/Documents/dotclaude/docs/fable-prompts/prompt2.md`。
 
 ## Phase 1 — 審計（只讀，不動任何檔案）
 

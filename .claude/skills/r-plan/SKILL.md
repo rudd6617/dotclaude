@@ -15,7 +15,7 @@ Plan the implementation for: $ARGUMENTS
 
 ## 思考方式
 
-Use "think hard" to evaluate alternatives. Pick the simplest approach.
+比較可行方案，選最簡單的那個。
 
 ## 輸出格式
 

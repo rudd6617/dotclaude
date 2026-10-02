@@ -9,7 +9,7 @@
 ## 0. 唯一源頭：dotclaude
 
 `AGENTS.md`、`CLAUDE.md`、`skills/`、`hooks/`、`settings.json` 與 `docs/` 下的 `ADR-FORMAT.md`、`MAINTENANCE.md`、`adr/README.md` 是**模板管理檔**，源頭在
-`/Users/rudolfchen/Documents/dotclaude/`，由 `sync.sh` 覆蓋同步到各專案。
+`dotclaude` repo（各機器 clone 位置不同，以本機路徑為準），由 `sync.sh` 覆蓋同步到各專案。
 
 **鐵則：改模板管理檔一律改 dotclaude 那份，再跑 `sync.sh <專案路徑>` 推過去。**
 直接改專案內副本 = 下次 sync 被無聲蓋掉。如果情急之下改了專案內副本，同一回合內必須回寫 dotclaude，否則等於沒改。

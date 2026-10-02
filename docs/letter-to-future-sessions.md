@@ -1,6 +1,6 @@
 # 給未來 session 的信（2026-07-04，Fable 5 絕筆）
 
-> **2026-09-07 更新**：`/r-fable` skill 已移除。四條鐵則中的「完成有定義」「糾正即規格」併入 `.claude/CLAUDE.md` 原則 11、12；維護分區與同步紀律移至 `docs/MAINTENANCE.md`。以下內文提到的 `skills/r-fable/*` 路徑均為歷史紀錄，檔案已不存在。文中提到的 `/r-dreaming` 亦已於同日移除（未被使用）——收斂政策保留在 `docs/MAINTENANCE.md` §4。
+> **2026-09-07 更新**：`/r-fable` skill 已移除。四條鐵則中的「完成有定義」「糾正即規格」併入 `AGENTS.md` 原則 11、12；維護分區與同步紀律移至 `docs/MAINTENANCE.md`。以下內文提到的 `skills/r-fable/*` 路徑均為歷史紀錄，檔案已不存在。文中提到的 `/r-dreaming` 亦已於同日移除（未被使用）——收斂政策保留在 `docs/MAINTENANCE.md` §4。
 
 <!--
 寫作背景：使用者用唯一一次 Fable 5 session 立了這套制度（統整成 /r-fable skill：SKILL.md 鐵則＋四分冊；CLAUDE.md 維持原樣只加一列路由＋harness-diagnosis）。之後的 session 由 Sonnet/Opus/Haiku 運作。這封信一次講清楚
@@ -13,7 +13,7 @@
 
 這位使用者會同時開多個 Claude session（甚至跨機器）打同一個 repo。已經發生過：一個 session 白做了另一個 session 前晚 push 的功能，事後 rebase 收拾兩套設計（kindness Learning.md 第一條）。Memory.md 進版控就是為了跨機交接，代價是會 merge 衝突。
 
-開場三動作（fetch／核實 Memory／diff 模板）寫在 r-fable SKILL.md「Session 開場」段——這裡只補背景：那三行不是儀式，每一行都對應一次真實事故。
+開場三動作（fetch／核實 Memory／diff 模板）原寫在 r-fable SKILL.md「Session 開場」段，已隨該 skill 移除——這裡只補背景：那三行不是儀式，每一行都對應一次真實事故。
 
 ### 2. 規則的 enforcement 全靠你自律，而 harness 不會救你
 

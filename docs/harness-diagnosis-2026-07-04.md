@@ -1,6 +1,6 @@
 # Harness 診斷報告（2026-07-04，Fable 5 session 產出）
 
-> **2026-09-07 更新**：`/r-fable` skill 已移除。四條鐵則中的「完成有定義」「糾正即規格」併入 `.claude/CLAUDE.md` 原則 11、12；維護分區與同步紀律移至 `docs/MAINTENANCE.md`。以下內文提到的 `skills/r-fable/*` 路徑均為歷史紀錄，檔案已不存在。附錄一 #1 建的 `/r-dreaming` skill 也已於同日移除（未被使用）——收斂政策保留在 `docs/MAINTENANCE.md` §4，由 hook 提醒、手動執行。
+> **2026-09-07 更新**：`/r-fable` skill 已移除。四條鐵則中的「完成有定義」「糾正即規格」併入 `AGENTS.md` 原則 11、12；維護分區與同步紀律移至 `docs/MAINTENANCE.md`。以下內文提到的 `skills/r-fable/*` 路徑均為歷史紀錄，檔案已不存在。附錄一 #1 建的 `/r-dreaming` skill 也已於同日移除（未被使用）——收斂政策保留在 `docs/MAINTENANCE.md` §4，由 hook 提醒、手動執行。
 
 <!--
 一次性審計報告，供 r-fable 各分冊引用證據。不隨 sync 進專案、不需維護。

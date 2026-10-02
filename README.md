@@ -23,7 +23,6 @@ Personal Claude Code template — development principles, custom skills, hooks, 
     ├── Learning.md               # Accumulated mistakes & lessons (auto-injected)
     ├── settings.json             # Hooks (SessionStart memory injection)
     ├── settings.local.json       # Local permissions
-    ├── launch.json               # Editor launch config
     ├── statusline.sh             # Status bar (lives here only — NOT synced; global settings point at it)
     ├── hooks/
     │   └── inject-memory.sh      # Auto-inject Learning + Memory; nudge a convergence pass past threshold

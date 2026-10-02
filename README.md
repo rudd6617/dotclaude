@@ -27,20 +27,15 @@ Personal Claude Code template — development principles, custom skills, hooks, 
     ├── hooks/
     │   └── inject-memory.sh      # Auto-inject Learning + Memory; nudge a convergence pass past threshold
     └── skills/
-        ├── r-zoom-out/SKILL.md         # /r-zoom-out — map an unfamiliar module
         ├── r-grill/SKILL.md            # /r-grill — alignment in frontier rounds (+ Wiki/ADR upkeep)
-        ├── r-wayfinder/SKILL.md        # /r-wayfinder — decision map for multi-session efforts
         ├── r-plan/SKILL.md             # /r-plan — architecture planning (4 sections)
-        ├── r-ticket/SKILL.md           # /r-ticket — spec issue + tracer-bullet slices
         ├── r-diagnose/SKILL.md         # /r-diagnose — 6-phase debugging (+ HITL loop template)
         ├── r-review/SKILL.md           # /r-review — single-file/PR quality check
         ├── r-multi-review/SKILL.md     # /r-multi-review — multi-model grounded + adversarial review
         ├── r-design/SKILL.md           # /r-design — frontend design anti-pattern checklist
         ├── r-deepen/SKILL.md           # /r-deepen — codebase-level refactor opportunities
         ├── r-eli5/SKILL.md             # /r-eli5 — explain to an outsider, big pictures few words
-        ├── r-handoff/SKILL.md          # /r-handoff — compact conversation into Memory.md
-        ├── r-audit/SKILL.md            # /r-audit — harness health check: doc-vs-reality + pain mining
-        └── r-teach/SKILL.md            # /r-teach — turn the workspace into a teaching environment
+        └── r-handoff/SKILL.md          # /r-handoff — compact conversation into Memory.md
 ```
 
 ## Core Principles
@@ -88,11 +83,8 @@ Roles are **not** baked into either file. `AGENTS.md` carries a short **Modes** 
 
 | Skill | Trigger | Purpose |
 |---|---|---|
-| `/r-zoom-out` | Entering an unfamiliar module | Global view: roles, boundaries, data flow |
 | `/r-grill` | Requirements are fuzzy | Frontier rounds: ask every answerable question, recompute; keeps Wiki/ADR current when terms resolve |
-| `/r-wayfinder` | Effort too big for one session | Decision map of tickets on GitHub, resolved one at a time |
 | `/r-plan` | Architecture or multi-file changes (after alignment) | Data flow, complexity, risks, go/no-go |
-| `/r-ticket` | Aligned work needs independently shippable slices | Spec issue + tracer-bullet tickets with blocking order |
 | `/r-diagnose` | Bug, regression, test failure, perf issue | 6-phase loop: feedback loop → reproduce → hypothesise → instrument → fix → post-mortem |
 | `/r-review` | Single file or PR | Taste rating, fatal issues, complexity, data structures |
 | `/r-multi-review` | Before finalizing; hallucinations would be costly | Two blind grounded verifiers + an adversarial refuter |
@@ -100,8 +92,6 @@ Roles are **not** baked into either file. `AGENTS.md` carries a short **Modes** 
 | `/r-deepen` | Codebase-level architecture review | Find shallow modules, weak seams, locality issues |
 | `/r-eli5` | Explaining something to an outsider | HTML artifact: big pictures, very few words |
 | `/r-handoff` | End of a long session / before compaction | Compact into `.claude/Memory.md` |
-| `/r-audit` | Periodic / after big institutional changes | Doc-vs-reality audit + pain mining; findings carry verification commands, fixes only after approval |
-| `/r-teach` | You want to learn a new concept or skill | Teaching workspace: storage strength, ZPD, cite high-trust sources |
 
 Typical flows:
 - Simple: just do it

@@ -29,7 +29,6 @@ Personal Claude Code template — development principles, custom skills, hooks, 
     └── skills/
         ├── r-grill/SKILL.md            # /r-grill — alignment in frontier rounds (+ Wiki/ADR upkeep)
         ├── r-plan/SKILL.md             # /r-plan — architecture planning (4 sections)
-        ├── r-diagnose/SKILL.md         # /r-diagnose — 6-phase debugging (+ HITL loop template)
         ├── r-review/SKILL.md           # /r-review — single-file/PR quality check
         ├── r-multi-review/SKILL.md     # /r-multi-review — multi-model grounded + adversarial review
         ├── r-design/SKILL.md           # /r-design — frontend design anti-pattern checklist
@@ -85,7 +84,6 @@ Roles are **not** baked into either file. `AGENTS.md` carries a short **Modes** 
 |---|---|---|
 | `/r-grill` | Requirements are fuzzy | Frontier rounds: ask every answerable question, recompute; keeps Wiki/ADR current when terms resolve |
 | `/r-plan` | Architecture or multi-file changes (after alignment) | Data flow, complexity, risks, go/no-go |
-| `/r-diagnose` | Bug, regression, test failure, perf issue | 6-phase loop: feedback loop → reproduce → hypothesise → instrument → fix → post-mortem |
 | `/r-review` | Single file or PR | Taste rating, fatal issues, complexity, data structures |
 | `/r-multi-review` | Before finalizing; hallucinations would be costly | Two blind grounded verifiers + an adversarial refuter |
 | `/r-design` | Building or reviewing frontend UI | Anti-pattern checklist against AI-looking design |
@@ -97,7 +95,7 @@ Typical flows:
 - Simple: just do it
 - Medium: `/r-grill` → implement → `/r-review`
 - Complex: `/r-grill` → `/r-plan` → implement → `/r-review`
-- Bug: `/r-diagnose`
+- Bug: failing test first, then fix (`AGENTS.md` principle 6)
 - Periodic: `/r-deepen`
 
 ## Self-Improvement Loop

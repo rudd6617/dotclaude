@@ -18,7 +18,7 @@ argument-hint: "[what the next session will focus on]"
 | 本次拍板、還沒沉澱進 AGENTS.md/Wiki/ADR 的決定 | 已確認結論 |
 | 卡住的點、未解問題、下一步要做的事 | 待辦 |
 | 下個 session 第一件該做的事 | 下次入口 |
-| 下個 agent 該呼叫哪些 skill（`/r-grill` / `/r-plan` / `/r-diagnose` / `/r-review` …），以及為什麼 | 建議 skill |
+| 下個 agent 該呼叫哪些 skill（`/r-grill` / `/r-plan` / `/r-review` …），以及為什麼 | 建議 skill |
 
 ## 規則
 

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Sync this dotclaude template into a target project.
 #
-# Overwrites template-managed files (AGENTS.md, CLAUDE.md, skills, hooks).
+# Overwrites template-managed files (AGENTS.md, CLAUDE.md, hooks) and the
+# template's own skills; project-only skills are left alone.
 # Seeds project-specific files only if missing — never clobbers the knowledge
 # you fill in per project (Wiki.md, Learning.md). Leaves volatile/local files
 # untouched (Memory.md, settings.local.json).
@@ -31,7 +32,6 @@ DST="$(cd "$DST" && pwd)"
 MANAGED=(
   "AGENTS.md"                  # 家規（工具無關規則源頭）；.claude/CLAUDE.md 靠 @../AGENTS.md 吸入
   ".claude/CLAUDE.md"
-  ".claude/skills"
   ".claude/hooks"
   ".claude/settings.json"      # project-specific overrides go in settings.local.json
   "docs/ADR-FORMAT.md"
@@ -63,6 +63,31 @@ for rel in "${MANAGED[@]}"; do
   fi
   echo "  ok     $rel"
 done
+
+# Skills are synced per skill, not as a whole dir, so project-only skills
+# (e.g. a project's own doc skill) survive. A manifest records which skills the
+# template owns, so a skill removed from the template is removed here too.
+echo "skills (template-owned only):"
+SKILLS_DST="$DST/.claude/skills"
+MANIFEST="$SKILLS_DST/.template-skills"
+run "mkdir -p '$SKILLS_DST'"
+if [ -f "$MANIFEST" ]; then
+  while IFS= read -r old; do
+    [ -n "$old" ] || continue
+    [ -d "$SRC/.claude/skills/$old" ] && continue
+    run "rm -rf '$SKILLS_DST/$old'"
+    echo "  remove $old (dropped from template)"
+  done < "$MANIFEST"
+fi
+names=()
+for dir in "$SRC"/.claude/skills/*/; do
+  name="$(basename "$dir")"
+  names+=("$name")
+  run "rm -rf '$SKILLS_DST/$name'"
+  run "cp -a '$SRC/.claude/skills/$name' '$SKILLS_DST/$name'"
+  echo "  ok     $name"
+done
+run "printf '%s\\n' ${names[*]} > '$MANIFEST'"
 
 echo "seed (only if missing):"
 for rel in "${SEED[@]}"; do

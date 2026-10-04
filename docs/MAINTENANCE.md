@@ -69,3 +69,4 @@
 - 在 dotclaude 改完模板檔 → commit → 對**當前工作的專案**跑 `./sync.sh <專案路徑>`（先 `--dry-run` 看一眼要蓋什麼）。
 - 其他專案不用主動巡迴同步；下次在那個專案工作時，開場發現模板落後（`diff -q` AGENTS.md 即知）再 sync。
 - sync 會**覆蓋**專案內所有 MANAGED 檔（以 `sync.sh` 清單為準——含 `AGENTS.md`、`CLAUDE.md`、`skills/`、`hooks/`、`settings.json` 與 docs 三檔）：若專案副本有未回寫 dotclaude 的本地修改，sync 前先 diff 搶救。
+- `skills/` 例外：只覆蓋模板有的 skill，專案自有 skill（例如專案文件專用 skill）保留。模板刪掉的 skill 靠專案內 `.claude/skills/.template-skills` 清單辨認並移除。專案專屬規則不寫 `AGENTS.md`（會被蓋），寫專案 `Learning.md`。

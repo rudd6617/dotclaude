@@ -19,7 +19,7 @@ Review the code at $ARGUMENTS following this structure.
 3. 當前 branch 名稱裡的 issue 編號
 4. 都沒有 → **明說「無規格來源，只跑標準軸」**，不要自己編一份規格出來審
 
-找到就 `gh issue view <N> --comments` 讀完 body 與驗收條件。
+找到就讀完 body 與驗收條件：專案有 `docs/backlog/` 就讀 `docs/backlog/<N>-*.md`（已在 diff 裡刪掉的用 `git show <base>:<路徑>` 讀），否則 `gh issue view <N> --comments`。
 
 **兩軸並列呈現，不合併、不互相重排。** 一個嚴重的規格偏移與一個嚴重的品質問題不該互相稀釋。
 

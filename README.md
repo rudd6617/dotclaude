@@ -23,7 +23,6 @@ Personal Claude Code template — development principles, custom skills, hooks, 
     ├── Learning.md               # Accumulated mistakes & lessons (auto-injected)
     ├── settings.json             # Hooks (SessionStart memory injection)
     ├── settings.local.json       # Local permissions
-    ├── statusline.sh             # Status bar (lives here only — NOT synced; global settings point at it)
     ├── hooks/
     │   └── inject-memory.sh      # Auto-inject Learning + Memory; nudge a convergence pass past threshold
     └── skills/
@@ -107,19 +106,9 @@ Typical flows:
 
 ADRs in `docs/adr/` are loaded on demand (not auto-injected) — they record one-shot decisions, not recurring patterns.
 
-## Status Line
+## User-Level Tools
 
-`.claude/statusline.sh` renders: **git branch · model · token usage (↑in ↓out) · context usage (% of window) · session price ($)**, with the context figure coloured green / yellow / red as it fills.
-
-It reads the session JSON from stdin (parsed with `python3`, falling back to `jq`) and asks `git` directly for the branch. No nerd-font glyphs, so it renders anywhere.
-
-**Set it up once per machine (global — every project picks it up):** in `~/.claude/settings.json` point `statusLine` at this repo's script via an absolute path. Clone the repo to the *same* path on each machine (e.g. `~/dotclaude`) so the global config stays portable:
-
-```json
-{ "statusLine": { "type": "command", "command": "/home/you/dotclaude/.claude/statusline.sh" } }
-```
-
-To update it later: `git pull` in your clone — the change applies to all projects on that machine. (This is why the script lives here, not in each project's `.claude/`.)
+This repo holds only what gets synced into projects. Machine-wide Claude Code tools — the status line and mods (e.g. the `ports-backlog` pane) — live in the [dotfiles](https://github.com/rudd6617/dotfiles) repo under `claude/`, installed by its `install.sh`.
 
 ## Usage
 

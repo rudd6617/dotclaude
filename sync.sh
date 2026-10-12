@@ -38,8 +38,6 @@ MANAGED=(
   "docs/MAINTENANCE.md"
   "docs/adr/README.md"
 )
-# statusline.sh intentionally NOT synced: it lives in this repo only and the
-# global ~/.claude/settings.json statusLine points here (see README §Status Line).
 
 # Seed only if absent → never overwrite filled-in project knowledge.
 SEED=(

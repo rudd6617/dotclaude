@@ -52,6 +52,7 @@ Gemini…）都讀這一份。Claude Code 只認 CLAUDE.md，所以 `.claude/CLA
 | `AGENTS.md` | **家規**：原則、模式、流程、Git 慣例——工具無關，任何 agent 都讀 | 規則改變時 |
 | `.claude/CLAUDE.md` | Claude 專屬：skill 路由、hook 說明。第一行 `@../AGENTS.md` 吸入家規 | Claude 專屬機制改變時 |
 | `.claude/Memory.md` | 當前進展、待辦、下次入口、建議 skill（揮發狀態；**是否進版控依專案定**——模板預設 gitignore，需跨機接手的專案改為進版控，代價是平行 session 會衝突。查現況：`git ls-files .claude/Memory.md`） | 對話收尾或進度變動時 |
+| `.claude/open-todo-backlog.md` | 整體剩餘工作總表（比 Memory.md 的待辦長命）。格式固定：第一個 `## 🎯` 段放剩餘項目，每項一個 `### 標題（剩 N 條）`，顯示用的 mod 只讀這一段 | 項目新增、完成或數量變動時 |
 | `.claude/Learning.md` | 重複出現的失敗模式 / 教訓（單檔） | 被糾正且推測會再犯時 |
 | `.claude/Wiki.md` | 長期知識：項目背景、技術棧、目錄結構、API、業務口徑、術語 | 對齊術語 / 解析新概念時 |
 | `.claude/skills/<name>/SKILL.md` | 流程手冊（除錯、審查、規劃…）。Claude 用 slash command 觸發，其他 agent 按需自行閱讀 | 流程改變時 |
@@ -61,6 +62,7 @@ Gemini…）都讀這一份。Claude Code 只認 CLAUDE.md，所以 `.claude/CLA
 語義分界：
 - **Wiki.md vs ADR/out-of-scope**：「現在是什麼」→ Wiki；「為什麼這樣 / 為什麼不做」→ 決策日誌
 - **ADR vs Learning**：ADR 一次性決策、有編號、不刪、有 Status 流轉；Learning 可演化、可整併、SessionStart 注入，累積過量時收斂
+- **待辦放哪**：下個 session 要接的那一步 → Memory.md；整體還剩什麼 → open-todo-backlog.md；單張票的規格（有編號）→ `docs/backlog/<N>-*.md`
 
 ## ADR 機制
 

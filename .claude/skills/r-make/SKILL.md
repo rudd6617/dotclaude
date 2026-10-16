@@ -45,7 +45,7 @@ argument-hint: "[what the Makefile should cover]"
    - **連正式庫的 SQL 一律唯讀**（Postgres 用 `PGOPTIONS='-c default_transaction_read_only=on'`）。
 5. **必要參數缺了就停**，印出一行用法：`make admin LOGIN=… NAME=… EMAIL=…`。
 6. **刻意不包**：還原正式庫、一打錯就不可逆的動作、要在已登入瀏覽器裡做的步驟——維持文件裡的手動步驟，Makefile 的 help 末尾可以提一句去哪看。
-7. **既有的其他入口不動**（`run.ps1`、`*.sh`）：不刪、不改寫。Makefile 以 macOS／Linux 為準。
+7. **既有的其他入口預設不動**（`run.ps1`、`*.sh`）：不刪、不改寫；使用者要求取代或移除時照辦。Makefile 以 macOS／Linux 為準。
 8. 寫法：所有 target 列進 `.PHONY`；配方行用 tab；需要整段一起跑的（`cd` 後再執行、`read` 確認）寫成一行並用 `set -e;` 開頭，不加 `.ONESHELL`。
 
 ## 流程

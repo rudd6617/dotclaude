@@ -62,6 +62,8 @@ argument-hint: "[what the Makefile should cover]"
 
 ## 範例骨架
 
+（awk 用 `$NF`／`$(NF-1)` 而不是錢號接數字：skill 帶參數呼叫時，錢號接數字會被換成參數，骨架就壞了。）
+
 ```make
 .DEFAULT_GOAL := help
 .PHONY: help dev check deploy status logs
@@ -70,7 +72,7 @@ DEPLOY_DIR ?= $(HOME)/services/myapp
 SRC_PATHS  := app web/src
 
 help: ## 列出所有指令
-	@awk 'BEGIN{FS=":.*##"} /^##@/{printf "\n%s\n",substr($$0,5)} /^[a-z-]+:.*##/{printf "  make %-12s %s\n",$$1,$$2}' $(MAKEFILE_LIST)
+	@awk 'BEGIN{FS=":.*## "} /^##@/{printf "\n%s\n",substr($$NF,5)} /^[a-z-]+:.*## /{printf "  make %-12s %s\n",$$(NF-1),$$NF}' $(MAKEFILE_LIST)
 
 ##@ 正式站
 guard-deploy-dir:

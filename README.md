@@ -33,6 +33,7 @@ Personal Claude Code template — development principles, custom skills, hooks, 
         ├── r-design/SKILL.md           # /r-design — frontend design anti-pattern checklist
         ├── r-deepen/SKILL.md           # /r-deepen — codebase-level refactor opportunities
         ├── r-eli5/SKILL.md             # /r-eli5 — explain to an outsider, big pictures few words
+        ├── r-make/SKILL.md             # /r-make — root Makefile as a thin, guarded front door to existing commands
         └── r-handoff/SKILL.md          # /r-handoff — compact conversation into Memory.md
 ```
 
@@ -88,6 +89,7 @@ Roles are **not** baked into either file. `AGENTS.md` carries a short **Modes** 
 | `/r-design` | Building or reviewing frontend UI | Anti-pattern checklist against AI-looking design |
 | `/r-deepen` | Codebase-level architecture review | Find shallow modules, weak seams, locality issues |
 | `/r-eli5` | Explaining something to an outsider | HTML artifact: big pictures, very few words |
+| `/r-make` | Collecting dev / check / deploy commands | Root Makefile wrapping existing commands, guards scaled to risk |
 | `/r-handoff` | End of a long session / before compaction | Compact into `.claude/Memory.md` |
 
 Typical flows:

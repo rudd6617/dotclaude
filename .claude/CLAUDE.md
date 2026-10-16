@@ -20,6 +20,7 @@
 | `/r-deepen` | codebase 級架構回顧 | 找深化機會 |
 | `/r-handoff` | 長對話收尾 / context 壓縮前 | 壓成交接、更新 `.claude/Memory.md` |
 | `/r-eli5` | 要把某個東西解釋給外行 / 主管 / 同事 | 大圖極少字的 HTML artifact，一次性不留檔 |
+| `/r-make` | 要整理 dev / check / deploy 等常用指令 | 寫或更新根目錄 Makefile：薄包裝現有指令，照風險加防呆 |
 
 典型流程（Workflow 六步的 skill 路由；步驟本體見 `AGENTS.md`）：
 - 簡單（單檔、無架構選擇）：直接做

@@ -103,7 +103,7 @@ Typical flows:
 
 1. **SessionStart hook** runs `inject-memory.sh` — injects `.claude/Learning.md` and `.claude/Memory.md` as system context
 2. When Claude gets corrected, the lesson is appended to `.claude/Learning.md` (one `##` heading per lesson)
-3. When `Learning.md` grows past the threshold (≥40 entries / ≥400 lines), the hook nudges a convergence pass — merge duplicates, promote recurring lessons into `AGENTS.md` principles, prune stale entries (criteria in `docs/MAINTENANCE.md` §4)
+3. When `Learning.md` grows past the threshold (≥40 entries / ≥400 lines / ≥9,000 injected characters — Claude Code cuts context past 10,000 to a 2,000-char preview), the hook nudges a convergence pass — merge duplicates, promote recurring lessons into `AGENTS.md` principles, prune stale entries (criteria in `docs/MAINTENANCE.md` §4)
 4. `/r-handoff` compacts the conversation into `Memory.md` so the next session picks up where you left off
 
 ADRs in `docs/adr/` are loaded on demand (not auto-injected) — they record one-shot decisions, not recurring patterns.

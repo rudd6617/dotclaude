@@ -7,9 +7,12 @@ CLAUDE_DIR="$CLAUDE_PROJECT_DIR/.claude"
 LEARNING="$CLAUDE_DIR/Learning.md"
 MEMORY="$CLAUDE_DIR/Memory.md"
 
-# Convergence threshold: entries (## headings) or total lines.
+# Convergence threshold: entries (## headings), total lines, or injected characters.
+# Claude Code replaces context over 10,000 chars with a file path and a 2,000-char
+# preview, so the nudge goes first to survive that cut.
 MAX_ENTRIES=40
 MAX_LINES=400
+MAX_CHARS=9000
 
 strip_comments() {
   # Single-line comments first: a same-line <!-- --> would open a sed range
@@ -23,6 +26,7 @@ has_content() {
 }
 
 CONTENT=""
+NUDGE=""
 
 if [ -f "$LEARNING" ]; then
   stripped=$(strip_comments "$LEARNING")
@@ -33,8 +37,7 @@ $stripped
     entries=$(grep -c '^## ' "$LEARNING")
     lines=$(wc -l < "$LEARNING")
     if [ "$entries" -ge "$MAX_ENTRIES" ] || [ "$lines" -ge "$MAX_LINES" ]; then
-      CONTENT="$CONTENT
-[learning] Learning.md 已 ${entries} 條 / ${lines} 行，超過收斂門檻（${MAX_ENTRIES} 條 / ${MAX_LINES} 行）。建議收斂：合併重複、把反覆出現的教訓升級成 AGENTS.md 原則、刪過期條目（判準見 docs/MAINTENANCE.md §4）。
+      NUDGE="[learning] Learning.md 已 ${entries} 條 / ${lines} 行，超過收斂門檻（${MAX_ENTRIES} 條 / ${MAX_LINES} 行）。建議收斂：合併重複、把反覆出現的教訓升級成 AGENTS.md 原則、刪過期條目（判準見 docs/MAINTENANCE.md §4）。
 "
     fi
   fi
@@ -52,4 +55,12 @@ fi
 
 [ -z "$CONTENT" ] && exit 0
 
-printf '%s' "$CONTENT" | python3 -c 'import sys,json; print(json.dumps({"systemMessage": sys.stdin.read()}))'
+chars=$(printf '%s' "$CONTENT" | python3 -c 'import sys; print(len(sys.stdin.read()))')
+if [ -z "$NUDGE" ] && [ "$chars" -ge "$MAX_CHARS" ]; then
+  NUDGE="[learning] 注入內容已 ${chars} 字元，超過 ${MAX_CHARS}；超過 10,000 會被截成 2,000 字預覽。建議收斂 Learning.md、精簡 Memory.md（判準見 docs/MAINTENANCE.md §4）。
+"
+fi
+CONTENT="$NUDGE$CONTENT"
+
+# SessionStart: additionalContext reaches the model; systemMessage only reaches the user.
+printf '%s' "$CONTENT" | python3 -c 'import sys,json; print(json.dumps({"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": sys.stdin.read()}}))'

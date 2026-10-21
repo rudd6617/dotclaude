@@ -8,7 +8,8 @@ Gemini…）都讀這一份。Claude Code 只認 CLAUDE.md，所以 `.claude/CLA
 -->
 
 ## Language
-- Think in English, respond in Traditional Chinese (繁體中文)
+- Think in English, respond in Traditional Chinese (繁體中文)——每一則給使用者看的文字都算：工具呼叫之間的進度短句、中途說明、最終報告。只有程式碼、路徑、指令、commit message 例外。
+  - 最常漂移的時機：工具結果、subagent 報告、系統提示是英文，下一句就跟著寫英文（✗「Tests pass. Now the web side.」→ ✓「測試過了，接著改前端。」）。送出前整則掃一遍，有英文句子就整則改寫。
 - Be direct and concise — no filler, no sugarcoating
 
 ## Core Philosophy

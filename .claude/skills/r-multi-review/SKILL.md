@@ -22,13 +22,15 @@ Multi-model review of a產出物。目標：抓**事實幻覺**與**需求缺漏
 - **是路徑** → 讀該檔內容，`artifactKind: "file"`
 - **其他（如「上一則方案」）** → 取本次對話剛產出的文字，`artifactKind: "text"`
 
-把 `requirement` / `artifact` / `artifactKind` 三者備妥，作為 workflow 的 `args`。
+**斷言清單** — 我從產出物抽出可查證的事實斷言，編號成 `claims: [{ id: "c1", claim }]`。兩個接地員查同一份清單、按 `id` 回覆，Phase 2 才能逐條對票（各自抽斷言時措辭不同，對不上）。
+
+把 `requirement` / `artifact` / `artifactKind` / `claims` 四者備妥，作為 workflow 的 `args`。
 
 ## Phase 1 — 跑 Workflow（R1 接地 → R2 反駁）
 
-用 Workflow 工具跑下面腳本（子代理的 grep/測試輸出隔離在主上下文外，省 context）。透過 `args` 傳入 Phase 0 的三個值。
+用 Workflow 工具跑下面腳本（子代理的 grep/測試輸出隔離在主上下文外，省 context）。透過 `args` 傳入 Phase 0 的四個值。
 
-**Fallback（工具清單裡沒有 Workflow 時）**：不要硬跑。改用 Agent 工具平行 spawn 等價的 subagent——R1 兩個盲審（一個 `model: opus`、一個 `model: sonnet`，各給下方 R1 prompt 與 artifact，互不知對方存在），收齊後再 spawn R2 反駁者（`model: opus`，給下方 R2 prompt 與 R1 結果）。回報格式照舊。
+**Fallback（工具清單裡沒有 Workflow 時）**：不要硬跑。改用 Agent 工具平行 spawn 等價的 subagent——R1 兩個盲審（一個 `model: opus`、一個 `model: sonnet`，各給下方 R1 prompt、斷言清單與 artifact，互不知對方存在），收齊後再 spawn R2 反駁者（`model: opus`，給下方 R2 prompt 與 R1 結果）。回報格式照舊。
 
 ```js
 export const meta = {
@@ -40,18 +42,18 @@ export const meta = {
   ],
 }
 
-const { requirement, artifact, artifactKind } = args
+const { requirement, artifact, artifactKind, claims } = args
 
 const CLAIM_SCHEMA = {
-  type: 'object', additionalProperties: false,
-  required: ['claims'],
+  type: 'object', additionalProperties: false, required: ['claims'],
   properties: {
     claims: {
       type: 'array',
       items: {
         type: 'object', additionalProperties: false,
-        required: ['claim', 'verdict', 'evidence'],
+        required: ['id', 'claim', 'verdict', 'evidence'],
         properties: {
+          id:       { type: 'string', description: '斷言清單的 id；清單外自行補的用 new-1、new-2…' },
           claim:    { type: 'string', description: '產出物中一個可查證的事實斷言' },
           verdict:  { enum: ['true', 'false', 'unverifiable'] },
           evidence: { type: 'string', description: 'file:line 或指令輸出；unverifiable 說明為何查不到' },
@@ -59,24 +61,20 @@ const CLAIM_SCHEMA = {
         },
       },
     },
-    gaps: {
-      type: 'array',
-      items: { type: 'string', description: '需求有、產出物沒覆蓋的點' },
-    },
+    gaps: { type: 'array', items: { type: 'string', description: '需求有、產出物沒覆蓋的點' } },
   },
 }
 
 const REFUTE_SCHEMA = {
-  type: 'object', additionalProperties: false,
-  required: ['rulings'],
+  type: 'object', additionalProperties: false, required: ['rulings'],
   properties: {
     rulings: {
       type: 'array',
       items: {
         type: 'object', additionalProperties: false,
-        required: ['claim', 'stands', 'reason'],
+        required: ['id', 'stands', 'reason'],
         properties: {
-          claim:  { type: 'string' },
+          id:     { type: 'string' },
           stands: { type: 'boolean', description: '嘗試反駁後，此斷言是否仍成立' },
           reason: { type: 'string', description: '反駁證據或為何無法推翻' },
         },
@@ -95,7 +93,10 @@ ${requirement}
 產出物：
 ${artifact}
 
-逐條列出可查證的事實斷言，各標 verdict：
+斷言清單（逐條按 id 回覆，一條都不能漏；清單漏掉的可查證斷言用 id new-1、new-2… 補上）：
+${claims.map(c => `${c.id}. ${c.claim}`).join('\n')}
+
+每條標 verdict：
 - true：已用工具確認為真（evidence 附 file:line 或指令輸出）
 - false：已用工具確認為假（這是幻覺，evidence 說明真相）
 - unverifiable：無法用工具查（evidence 說明為何）
@@ -106,14 +107,13 @@ const r1 = (await parallel([
   () => agent(groundPrompt, { label: 'ground:opus',   phase: 'R1-Ground', model: 'opus',   schema: CLAIM_SCHEMA }),
   () => agent(groundPrompt, { label: 'ground:sonnet', phase: 'R1-Ground', model: 'sonnet', schema: CLAIM_SCHEMA }),
 ])).filter(Boolean)
+  // 兩邊各自補的 new-1 是不同斷言，加 reviewer 前綴避免撞號
+  .map((r, i) => ({ ...r, claims: r.claims.map(c => c.id.startsWith('new-') ? { ...c, id: `r${i}-${c.id}` } : c) }))
 
-// 存活斷言 = 兩個接地員都沒判 false 的（要拿去對抗反駁）
-const falseClaims = new Set(
-  r1.flatMap(r => r.claims.filter(c => c.verdict === 'false').map(c => c.claim))
-)
-const surviving = [...new Set(
-  r1.flatMap(r => r.claims.filter(c => c.verdict !== 'false').map(c => c.claim))
-)].filter(c => !falseClaims.has(c))
+// 存活斷言 = 沒有任何接地員判 false 的（要拿去對抗反駁）
+const text = new Map([...claims.map(c => [c.id, c.claim]), ...r1.flatMap(r => r.claims.map(c => [c.id, c.claim]))])
+const falseIds = new Set(r1.flatMap(r => r.claims.filter(c => c.verdict === 'false').map(c => c.id)))
+const surviving = [...text.keys()].filter(id => !falseIds.has(id))
 
 let r2 = null
 if (surviving.length) {
@@ -126,25 +126,25 @@ ${requirement}
 ${artifact}
 
 待反駁的存活斷言：
-${surviving.map((c, i) => `${i + 1}. ${c}`).join('\n')}
+${surviving.map(id => `${id}. ${text.get(id)}`).join('\n')}
 
-對每個斷言給 ruling：stands=false 表示你成功找到反例（reason 附證據）；stands=true 表示盡力仍無法推翻。另列 extraGaps。`
+對每個斷言按 id 給 ruling：stands=false 表示你成功找到反例（reason 附證據）；stands=true 表示盡力仍無法推翻。另列 extraGaps。`
   phase('R2-Refute')
   r2 = await agent(refutePrompt, { label: 'refute', phase: 'R2-Refute', model: 'opus', schema: REFUTE_SCHEMA })
 }
 
-return { r1, r2, surviving, falseClaims: [...falseClaims] }
+return { r1, r2, surviving, falseIds: [...falseIds] }
 ```
 
 ## Phase 2 — 統合（我做，不交給模型）
 
-合併 workflow 回傳的 `r1` / `r2`，去重，分三類：
+合併 workflow 回傳的 `r1` / `r2`，按 `id` 收票：兩個接地員的 `verdict` 各一票，R2 的 `stands:false` 記 false、`stands:true` 記 true；`unverifiable` 不算票。每條斷言只落一類：
 
 | 分類 | 判定 | 處置 |
 |---|---|---|
-| ✅ **CONFIRMED** | 有接地證據且模型一致：任一接地員判 `false` 的斷言（＝確認的幻覺），或 R2 `stands:false` 推翻的斷言，或兩個接地員都指出的 gap | 列為必修，等用戶確認才動 |
-| ⚠️ **DISPUTED** | 模型分歧：一個接地員判 `true` 另一個判 `false`；或 R1 判 `true` 但 R2 `stands:false`；或只有單一 reviewer 提出的 major+ 問題 | **交給用戶裁決**，附雙方證據 |
-| ❌ **REJECTED** | 被反駁的誤報：R2 判 `stands:true` 且無其他佐證的可疑斷言，或 `unverifiable` 且無實害 | 丟棄，**只留一行計數**（不靜默吞掉） |
+| ✅ **CONFIRMED** | 斷言有 false 票、沒有 true 票（＝確認的幻覺）；或兩個接地員都指出的 gap | 列為必修，等用戶確認才動 |
+| ⚠️ **DISPUTED** | 斷言同時有 false 票與 true 票；或只有單一 reviewer 提出的 major+ gap | **交給用戶裁決**，附雙方證據 |
+| ❌ **REJECTED** | 斷言沒有 false 票（查證成立或查不到）；或無實害的單方 gap | 丟棄，**只留一行計數**（不靜默吞掉） |
 
 輸出格式：先給 CONFIRMED 清單（含 `file:line` 證據）→ DISPUTED 逐項列選項讓用戶選 → 末尾一行 `REJECTED: N 項（已丟棄）`。
 

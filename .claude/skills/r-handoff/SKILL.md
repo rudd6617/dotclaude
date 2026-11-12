@@ -25,7 +25,7 @@ argument-hint: "[what the next session will focus on]"
 1. **不複製其他 artifact 已有的內容** — PRD、plan、ADR、commit、diff 用路徑/URL 引用，不重貼
 2. **redact 敏感資訊** — API key、密碼、PII
 3. **若有 $ARGUMENTS** — 視為「下個 session 的聚焦點」，依此裁剪內容並寫入「下次入口」
-4. **長度上限** — Memory.md 一頁可讀完。冗長 = 等於沒寫；舊進展直接覆蓋，不要堆積
+4. **長度上限** — Memory.md ≤ 4,000 字元。寫完跑 `wc -m .claude/Memory.md` 量一次，超過就刪到低於上限再回報。舊進展直接覆蓋，不要堆積。（hook 注入上限是 9,000 字元，要留一半以上給 Learning.md）
 5. **穩定的偏好/規則不進 Memory** — 那屬於 `AGENTS.md`；穩定的領域知識屬於 `.claude/Wiki.md`
 
 ## 輸出

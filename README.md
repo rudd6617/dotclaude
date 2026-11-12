@@ -24,7 +24,8 @@ Personal Claude Code template — development principles, custom skills, hooks, 
     ├── settings.json             # Hooks (SessionStart memory injection)
     ├── settings.local.json       # Local permissions
     ├── hooks/
-    │   └── inject-memory.sh      # Auto-inject Learning + Memory; nudge a convergence pass past threshold
+    │   ├── inject-memory.sh      # Auto-inject Learning + Memory; nudge a convergence pass past threshold
+    │   └── check-reply.py        # Stop hook: send a mostly-English reply back for a rewrite; nudge a handoff past 200k tokens
     └── skills/
         ├── r-grill/SKILL.md            # /r-grill — alignment in frontier rounds (+ Wiki/ADR upkeep)
         ├── r-plan/SKILL.md             # /r-plan — architecture planning (4 sections)
@@ -47,7 +48,7 @@ Encoded in `AGENTS.md`:
 4. **Early return, fail fast** — errors surface immediately, no defensive try-catch
 5. **Conservative dependencies** — stdlib over third-party
 6. **Test-first bug fixes** — write a failing test before fixing; missing test seam is itself an architectural finding
-7. **Isolate cross-file refactors** — ask about a git worktree first
+7. **Isolate changes only when needed** — work on the current branch by default; ask about a git worktree only when production runs from this folder or another session is editing the same repo
 8. **Touch only what's necessary** — no drive-by refactor / formatting / docstring
 9. **Ask when ambiguous** — list options, don't silently pick
 10. **Output is an interface** — conclusion first, tables over walls of prose, claims backed by evidence

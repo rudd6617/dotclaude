@@ -50,7 +50,7 @@ argument-hint: "[what the Makefile should cover]"
 
 ## 流程
 
-1. 照「動工前先查」查完，列出 target 表（名字／做什麼／呼叫哪條指令／有哪些防呆），交使用者確認。這是 ≥2 檔變更（Makefile＋指令文件），照 `AGENTS.md` 原則 7 先問要不要 worktree。
+1. 照「動工前先查」查完，列出 target 表（名字／做什麼／呼叫哪條指令／有哪些防呆），交使用者確認。
 2. 寫 Makefile。
 3. 改指令文件：每列換成 make 指令，原本的完整指令留在旁邊（make 壞了還有路走）。
 4. 驗證（全部要跑，結果貼進回報）：

@@ -9,6 +9,12 @@
 #
 # Usage:
 #   /path/to/dotclaude/sync.sh <target-project-dir> [-n|--dry-run]
+#   /path/to/dotclaude/sync.sh --all <parent-dir>... [-n|--dry-run]
+#
+# --all syncs every project directly under the given parent dirs that already
+# carries the template (.claude/hooks/inject-memory.sh). It skips a project that
+# is not a clean git repo, so an overwrite can always be reviewed and reverted,
+# and asks once before writing.
 #
 # Re-run any time the template updates to pull the latest in.
 
@@ -16,15 +22,46 @@ set -euo pipefail
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-DRY=0; DST=""
+DRY=0; ALL=0; DIRS=()
 for a in "$@"; do
   case "$a" in
     -n|--dry-run) DRY=1 ;;
+    --all) ALL=1 ;;
     -*) echo "unknown flag: $a" >&2; exit 2 ;;
-    *)  DST="$a" ;;
+    *)  DIRS+=("$a") ;;
   esac
 done
-[ -n "$DST" ] || { echo "usage: sync.sh <target-project-dir> [-n|--dry-run]" >&2; exit 2; }
+usage() { echo "usage: sync.sh <target-project-dir> [-n|--dry-run]
+       sync.sh --all <parent-dir>... [-n|--dry-run]" >&2; exit 2; }
+
+if [ "$ALL" -eq 1 ]; then
+  [ "${#DIRS[@]}" -ge 1 ] || usage
+  targets=()
+  for parent in "${DIRS[@]}"; do
+    for hook in "$parent"/*/.claude/hooks/inject-memory.sh; do
+      [ -e "$hook" ] || continue
+      dir="$(cd "$(dirname "$hook")/../.." && pwd)"
+      [ "$dir" != "$SRC" ] || continue
+      if [ ! -d "$dir/.git" ]; then echo "skip   $dir (not a git repo)"; continue; fi
+      if [ -n "$(git -C "$dir" status --porcelain)" ]; then echo "skip   $dir (uncommitted changes)"; continue; fi
+      echo "sync   $dir"
+      targets+=("$dir")
+    done
+  done
+  [ "${#targets[@]}" -ge 1 ] || { echo "nothing to sync"; exit 0; }
+  flag=()
+  if [ "$DRY" -eq 1 ]; then
+    flag=(--dry-run)
+  else
+    read -r -p "sync these ${#targets[@]} projects? [y/N] " reply
+    [[ $reply == [yY]* ]] || { echo "aborted"; exit 1; }
+  fi
+  for dir in "${targets[@]}"; do "${BASH_SOURCE[0]}" "$dir" ${flag[@]+"${flag[@]}"}; done
+  exit 0
+fi
+
+[ "${#DIRS[@]}" -eq 1 ] || usage
+DST="${DIRS[0]}"
 DST="$(cd "$DST" && pwd)"
 [ "$SRC" != "$DST" ] || { echo "refusing to sync onto the template itself" >&2; exit 1; }
 
@@ -43,6 +80,7 @@ MANAGED=(
 SEED=(
   ".claude/Wiki.md"
   ".claude/Learning.md"
+  ".claude/Verify.md"
 )
 
 run() { [ "$DRY" -eq 1 ] && echo "  [dry-run] $*" || eval "$*"; }

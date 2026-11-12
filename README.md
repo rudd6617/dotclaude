@@ -19,6 +19,7 @@ Personal Claude Code template — development principles, custom skills, hooks, 
 └── .claude/
     ├── CLAUDE.md                 # Claude-only layer: skill routing, hooks. First line `@../AGENTS.md` pulls in the house rules
     ├── Wiki.md                   # Long-term knowledge: background, stack, dirs, API, glossary
+    ├── Verify.md                 # Walkthrough playbook: launch, login, isolation, evidence, cleanup
     ├── Memory.md                 # Volatile session state — where to pick up (gitignored in this repo; per-project choice)
     ├── Learning.md               # Accumulated mistakes & lessons (auto-injected)
     ├── settings.json             # Hooks (SessionStart memory injection)
@@ -65,6 +66,7 @@ Encoded in `AGENTS.md`:
 | `.claude/Memory.md` | Volatile session state — where to pick up | End of session (`/r-handoff`) or progress changes |
 | `.claude/Learning.md` | Recurring failure patterns & lessons | You got corrected and it could happen again |
 | `.claude/Wiki.md` | Long-term knowledge: background, stack, dirs, API, glossary | Aligning on a term / resolving a new concept |
+| `.claude/Verify.md` | Walkthrough playbook: launch, login, isolation, evidence, cleanup | Before the first UI walkthrough; when a step goes stale |
 | `docs/adr/NNNN-*.md` | Architecture decisions (why X not Y) | All three ADR conditions hold |
 | `.out-of-scope/*.md` | Rejected proposals (why NOT to do X) | The same proposal could resurface |
 
@@ -121,6 +123,7 @@ Clone this repo and open it with Claude Code. The `.claude/` config is picked up
 
 ```bash
 /path/to/dotclaude/sync.sh /path/to/your-project        # add --dry-run to preview
+/path/to/dotclaude/sync.sh --all ~/Documents ~/services  # every clean git project that already carries the template
 ```
 
 Then fill `.claude/Wiki.md` (stack, glossary, etc.) and add ADRs as decisions arise.
@@ -130,7 +133,7 @@ Then fill `.claude/Wiki.md` (stack, glossary, etc.) and add ADRs as decisions ar
 | | Files | On sync |
 |---|---|---|
 | **Template** | `AGENTS.md`, `CLAUDE.md`, `skills/`, `hooks/`, `settings.json`, `docs/ADR-FORMAT.md`, `docs/MAINTENANCE.md`, `docs/adr/README.md` | **Overwritten** (project overrides go in `settings.local.json`) |
-| **Project knowledge** | `Wiki.md`, `Learning.md` | **Seeded only if missing** — never clobbered |
+| **Project knowledge** | `Wiki.md`, `Learning.md`, `Verify.md` | **Seeded only if missing** — never clobbered |
 | **Volatile / local** | `Memory.md`, `settings.local.json` | **Untouched** |
 
 Whether `.claude/Memory.md` is version-controlled is **each project's call** — `sync.sh` never touches it and `.gitignore` is not synced. This repo ignores it; a project handed off across machines may commit it instead, at the cost of merge conflicts between parallel sessions. Check which you have with `git ls-files .claude/Memory.md`.

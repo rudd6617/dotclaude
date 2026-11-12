@@ -7,6 +7,7 @@ Personal Claude Code template — development principles, custom skills, hooks, 
 ```
 .
 ├── AGENTS.md                     # House rules — principles, modes, workflow, git. Tool-agnostic; every agent reads this
+├── tools/                        # usage-*.py: mine ~/.claude transcripts for usage stats, corrections, hook sizes
 ├── sync.sh                       # Push template updates into another project (overwrite managed, keep yours)
 ├── docs/
 │   ├── ADR-FORMAT.md             # ADR template

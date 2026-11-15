@@ -19,6 +19,7 @@
 | `/r-design` | 建構 / 審查前端 UI | 設計 anti-pattern 清單，避免 AI 味 |
 | `/r-deepen` | codebase 級架構回顧 | 找深化機會 |
 | `/r-handoff` | 長對話收尾 / context 壓縮前 | 壓成交接、更新 `.claude/Memory.md` |
+| `/r-backlog` | 問「還有哪些 backlog」、要更新剩餘工作 | 依 commit／票／對話更新 `open-todo-backlog.md`，列出全部剩餘項目與建議下一個 |
 | `/r-eli5` | 要把某個東西解釋給外行 / 主管 / 同事 | 大圖極少字的 HTML artifact，一次性不留檔 |
 | `/r-make` | 要整理 dev / check / deploy 等常用指令 | 寫或更新根目錄 Makefile：薄包裝現有指令，照風險加防呆 |
 

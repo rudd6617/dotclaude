@@ -37,7 +37,8 @@ Personal Claude Code template — development principles, custom skills, hooks, 
         ├── r-deepen/SKILL.md           # /r-deepen — codebase-level refactor opportunities
         ├── r-eli5/SKILL.md             # /r-eli5 — explain to an outsider, big pictures few words
         ├── r-make/SKILL.md             # /r-make — root Makefile as a thin, guarded front door to existing commands
-        └── r-handoff/SKILL.md          # /r-handoff — compact conversation into Memory.md
+        ├── r-handoff/SKILL.md          # /r-handoff — compact conversation into Memory.md
+        └── r-backlog/SKILL.md          # /r-backlog — update open-todo-backlog.md, then list every remaining item
 ```
 
 ## Core Principles
@@ -95,6 +96,7 @@ Roles are **not** baked into either file. `AGENTS.md` carries a short **Modes** 
 | `/r-eli5` | Explaining something to an outsider | HTML artifact: big pictures, very few words |
 | `/r-make` | Collecting dev / check / deploy commands | Root Makefile wrapping existing commands, guards scaled to risk |
 | `/r-handoff` | End of a long session / before compaction | Compact into `.claude/Memory.md` |
+| `/r-backlog` | Asking what is left / updating remaining work | Update `open-todo-backlog.md` from commits, tickets and the conversation; list every item and a suggested next one |
 
 Typical flows:
 - Simple: just do it

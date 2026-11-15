@@ -8,7 +8,25 @@ const BOLD = new Set(['h1', 'h2', 'h3', 'bold', 'header'])
 // The reply's bullet column, as the built-in renderer leaves it.
 const GUTTER = 2
 
+// Prompts the person typed: at the terminal (composer) or from a phone (bridge).
+const OWN_PROMPT = new Set(['composer', 'bridge'])
+
 export const register: Register = on => {
+  on('ui.render', { component: 'UserMessage' }, async ($, e, next) => {
+    if (e.surface !== 'terminal' || !OWN_PROMPT.has(e.props.origin.kind)) return next(e)
+    const { Box, Text } = $.ui.resolve(e)
+    return (
+      <Box flexDirection="row" backgroundColor={PALETTE.promptBg} paddingX={1}>
+        <Box width={GUTTER} flexShrink={0}>
+          <Text color={PALETTE.promptFg} backgroundColor={PALETTE.promptBg} bold>❯</Text>
+        </Box>
+        <Box flexGrow={1}>
+          <Text color={PALETTE.promptFg} backgroundColor={PALETTE.promptBg}>{e.props.text}</Text>
+        </Box>
+      </Box>
+    )
+  })
+
   on('ui.render', { component: 'AssistantMessage' }, async ($, e, next) => {
     if (e.surface !== 'terminal' || e.props.isSummary) return next(e)
     const blocks = parse(e.props.text)

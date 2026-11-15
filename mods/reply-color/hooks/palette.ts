@@ -11,6 +11,9 @@ export const PALETTE = {
   header: '#8fa6d6',
   border: '#5a5f72',
   marker: '#5a5f72',
+  // Your own prompt row: a filled band so it is easy to spot when scrolling back.
+  promptBg: '#2e3a52',
+  promptFg: '#f2e2b8',
 } as const
 
 export type Role = keyof typeof PALETTE

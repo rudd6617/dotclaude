@@ -91,6 +91,7 @@ IMPORTANT: 所有程式碼變更必須經過使用者確認後才可以執行。
 - 命名跟著代碼與 glossary 走，不自創同義詞。
 - 動測試、DB、建置前先看 `.claude/Wiki.md` 的 Commands 段——各專案的驗證分級與動線寫在那裡，不在本檔。
 
+<!-- 下一段 Project Context 由專案自己寫：`sync.sh` 覆蓋 AGENTS.md 時會保留這一段，所以它要一直是最後一段。 -->
 ## Project Context
 
 通用模板。技術棧與長期知識見 `.claude/Wiki.md`（請依專案填寫）。

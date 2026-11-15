@@ -49,4 +49,16 @@ grep -q '^# mine$' "$root/clean/.claude/Verify.md"; check "existing Verify.md ke
 # 5. Single-target form still works
 "$SYNC" "$root/stranger" >/dev/null && synced "$root/stranger"; check "single target still syncs" $?
 
+# 6. A project's own Project Context survives a sync; the placeholder does not stick
+printf '# old rules\n\n## Project Context\n\n店面營運系統（自訂簡介）。\n' > "$root/stranger/AGENTS.md"
+"$SYNC" "$root/stranger" >/dev/null
+grep -q '^店面營運系統（自訂簡介）。$' "$root/stranger/AGENTS.md" \
+  && ! grep -q '請依專案填寫' "$root/stranger/AGENTS.md" \
+  && [ "$(grep -c '^## Project Context$' "$root/stranger/AGENTS.md")" -eq 1 ] \
+  && synced "$root/stranger"; check "project's own Project Context kept" $?
+
+printf '# old rules\n' > "$root/stranger/AGENTS.md"
+"$SYNC" "$root/stranger" >/dev/null
+grep -q '請依專案填寫' "$root/stranger/AGENTS.md"; check "no Project Context gets the template's" $?
+
 [ "$FAILS" -eq 0 ] && echo "all passed" || { echo "$FAILS failed"; exit 1; }

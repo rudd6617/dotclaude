@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Sync this dotclaude template into a target project.
 #
-# Overwrites template-managed files (AGENTS.md, CLAUDE.md, hooks) and the
+# Overwrites template-managed files (AGENTS.md but its Project Context section,
+# CLAUDE.md, hooks) and the
 # template's own skills; project-only skills are left alone.
 # Seeds project-specific files only if missing — never clobbers the knowledge
 # you fill in per project (Wiki.md, Learning.md). Leaves volatile/local files
@@ -85,6 +86,16 @@ SEED=(
 
 run() { [ "$DRY" -eq 1 ] && echo "  [dry-run] $*" || eval "$*"; }
 
+# AGENTS.md is the template's except its last section, ## Project Context,
+# which describes the project. Remember the project's own text before the
+# overwrite and put it back after. Relies on that section staying last.
+CONTEXT_HEAD='## Project Context'
+project_context() { awk -v h="$CONTEXT_HEAD" '$0==h{on=1} on' "$1"; }
+before_context() { awk -v h="$CONTEXT_HEAD" '$0==h{exit} {print}' "$1"; }
+OLD_CONTEXT=""
+[ -f "$DST/AGENTS.md" ] && OLD_CONTEXT="$(project_context "$DST/AGENTS.md")"
+TEMPLATE_CONTEXT="$(project_context "$SRC/AGENTS.md")"
+
 [ "$DRY" -eq 1 ] && tag=" (dry-run)" || tag=""
 echo "sync: $SRC  ->  $DST$tag"
 echo "overwrite (template):"
@@ -99,6 +110,12 @@ for rel in "${MANAGED[@]}"; do
   fi
   echo "  ok     $rel"
 done
+if [ -n "$OLD_CONTEXT" ] && [ "$OLD_CONTEXT" != "$TEMPLATE_CONTEXT" ]; then
+  if [ "$DRY" -eq 0 ]; then
+    { before_context "$SRC/AGENTS.md"; printf '%s\n' "$OLD_CONTEXT"; } > "$DST/AGENTS.md"
+  fi
+  echo "  keep   AGENTS.md $CONTEXT_HEAD (the project's own)"
+fi
 
 # Skills are synced per skill, not as a whole dir, so project-only skills
 # (e.g. a project's own doc skill) survive. A manifest records which skills the

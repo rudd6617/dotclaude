@@ -1,0 +1,6 @@
+{
+  "name": "agent-band",
+  "version": "0.1.0",
+  "description": "Shows running and finished subagents in a row above the prompt, and marks Agent tool rows with a colored bar.",
+  "types": "./types/index.d.ts"
+}

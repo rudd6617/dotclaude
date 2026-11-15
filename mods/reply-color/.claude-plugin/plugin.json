@@ -1,0 +1,5 @@
+{
+  "name": "reply-color",
+  "version": "0.1.0",
+  "description": "Colors headings, tables, bold text, inline code and paths in replies; hands everything else back to the built-in renderer."
+}

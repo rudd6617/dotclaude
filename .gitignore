@@ -1,2 +1,6 @@
 # Volatile per-project session state — not version controlled
 .claude/Memory.md
+
+# Mods: files the Claude Code engine writes beside each mod on load
+mods/*/.claude-plugin/types/
+mods/*/tsconfig.json

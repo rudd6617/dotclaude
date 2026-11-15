@@ -135,7 +135,8 @@ Then fill `.claude/Wiki.md` (stack, glossary, etc.) and add ADRs as decisions ar
 
 | | Files | On sync |
 |---|---|---|
-| **Template** | `AGENTS.md`, `CLAUDE.md`, `skills/`, `hooks/`, `settings.json`, `docs/ADR-FORMAT.md`, `docs/MAINTENANCE.md`, `docs/adr/README.md` | **Overwritten** (project overrides go in `settings.local.json`) |
+| **Template** | `AGENTS.md`, `CLAUDE.md`, `hooks/`, `settings.json`, `docs/ADR-FORMAT.md`, `docs/MAINTENANCE.md`, `docs/adr/README.md` | **Overwritten** (project overrides go in `settings.local.json`) |
+| **Skills** | `.claude/skills/r-*` | **Linked** into `~/.claude/skills`, not copied; template copies in the project are removed, the project's own skills stay |
 | **Project knowledge** | `Wiki.md`, `Learning.md`, `Verify.md` | **Seeded only if missing** — never clobbered |
 | **Volatile / local** | `Memory.md`, `settings.local.json` | **Untouched** |
 

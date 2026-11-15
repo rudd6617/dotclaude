@@ -19,6 +19,7 @@ new_project() {
 synced() { ! grep -q '^# old rules$' "$1/AGENTS.md"; }
 
 root=$(mktemp -d)
+export HOME="$root/home"   # skills link into ~/.claude/skills; keep the real one out of it
 new_project "$root/clean"    yes yes
 new_project "$root/dirty"    yes yes; echo wip > "$root/dirty/wip.txt"
 new_project "$root/nogit"    yes no

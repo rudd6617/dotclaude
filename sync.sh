@@ -2,8 +2,8 @@
 # Sync this dotclaude template into a target project.
 #
 # Overwrites template-managed files (AGENTS.md but its Project Context section,
-# CLAUDE.md, hooks) and the
-# template's own skills; project-only skills are left alone.
+# CLAUDE.md, hooks). Template skills are linked into ~/.claude/skills instead of
+# copied, and any project copies of them are removed; project-only skills stay.
 # Seeds project-specific files only if missing — never clobbers the knowledge
 # you fill in per project (Wiki.md, Learning.md). Leaves volatile/local files
 # untouched (Memory.md, settings.local.json).
@@ -117,30 +117,39 @@ if [ -n "$OLD_CONTEXT" ] && [ "$OLD_CONTEXT" != "$TEMPLATE_CONTEXT" ]; then
   echo "  keep   AGENTS.md $CONTEXT_HEAD (the project's own)"
 fi
 
-# Skills are synced per skill, not as a whole dir, so project-only skills
-# (e.g. a project's own doc skill) survive. A manifest records which skills the
-# template owns, so a skill removed from the template is removed here too.
-echo "skills (template-owned only):"
+# Skills are not copied. Each template skill is linked into ~/.claude/skills,
+# so every project sees the latest one without a sync. A project keeps only its
+# own skills: copies of template skills, current or retired, are removed from it.
+template_skills() { for d in "$SRC"/.claude/skills/*/; do basename "$d"; done; }
+retired_skills() {
+  git -C "$SRC" log --diff-filter=D --name-only --format= -- '.claude/skills/r-*/SKILL.md' | awk -F/ '{print $3}'
+}
+
+echo "skills (linked into ~/.claude/skills):"
+GLOBAL="$HOME/.claude/skills"
+run "mkdir -p '$GLOBAL'"
+for name in $(template_skills); do
+  link="$GLOBAL/$name"
+  if [ -e "$link" ] && [ ! -L "$link" ]; then echo "  skip   $link (not a link; left alone)"; continue; fi
+  run "ln -sfn '$SRC/.claude/skills/$name' '$link'"
+  echo "  link   $name"
+done
+for link in "$GLOBAL"/*; do
+  [ -L "$link" ] && [ ! -e "$link" ] || continue
+  case "$(readlink "$link")" in "$SRC/.claude/skills/"*) ;; *) continue ;; esac
+  run "rm '$link'"
+  echo "  unlink $(basename "$link") (dropped from template)"
+done
+
+echo "skills (template copies removed from project):"
 SKILLS_DST="$DST/.claude/skills"
 MANIFEST="$SKILLS_DST/.template-skills"
-run "mkdir -p '$SKILLS_DST'"
-if [ -f "$MANIFEST" ]; then
-  while IFS= read -r old; do
-    [ -n "$old" ] || continue
-    [ -d "$SRC/.claude/skills/$old" ] && continue
-    run "rm -rf '$SKILLS_DST/$old'"
-    echo "  remove $old (dropped from template)"
-  done < "$MANIFEST"
-fi
-names=()
-for dir in "$SRC"/.claude/skills/*/; do
-  name="$(basename "$dir")"
-  names+=("$name")
+for name in $( { template_skills; retired_skills; cat "$MANIFEST" 2>/dev/null; } | sort -u); do
+  [ -e "$SKILLS_DST/$name" ] || continue
   run "rm -rf '$SKILLS_DST/$name'"
-  run "cp -a '$SRC/.claude/skills/$name' '$SKILLS_DST/$name'"
-  echo "  ok     $name"
+  echo "  remove $name"
 done
-run "printf '%s\\n' ${names[*]} > '$MANIFEST'"
+if [ -f "$MANIFEST" ]; then run "rm '$MANIFEST'"; fi
 
 echo "seed (only if missing):"
 for rel in "${SEED[@]}"; do

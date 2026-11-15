@@ -11,9 +11,11 @@ export const PALETTE = {
   header: '#8fa6d6',
   border: '#5a5f72',
   marker: '#5a5f72',
-  // Your own prompt row: a filled band so it is easy to spot when scrolling back.
-  promptBg: '#2e3a52',
-  promptFg: '#f2e2b8',
+  // Your own prompt row: a plum band with a left bar, so it is easy to spot when scrolling back.
+  // Kept off yellow on purpose: replies already use yellow for bold.
+  promptBg: '#3a2d48',
+  promptFg: '#efe6fa',
+  promptBar: '#b9a3d9',
 } as const
 
 export type Role = keyof typeof PALETTE

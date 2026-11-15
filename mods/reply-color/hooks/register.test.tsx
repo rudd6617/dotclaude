@@ -69,7 +69,9 @@ test('your own prompt draws on a filled band', async ($, on) => {
   const ui = await $.ui.mount(PROMPT('composer', 'terminal'))
   expect(await ui.find({ type: 'Text', text: /engine/ })).toBeUndefined()
   const row = await ui.find({ type: 'Text', text: /^幫我加底色$/ })
-  expect(row?.props.backgroundColor).toBe('#2e3a52')
+  expect(row?.props.backgroundColor).toBe('#3a2d48')
+  const bar = await ui.find({ type: 'Text', text: /^▌$/ })
+  expect(bar?.props.color).toBe('#b9a3d9')
   await ui.unmount()
 })
 

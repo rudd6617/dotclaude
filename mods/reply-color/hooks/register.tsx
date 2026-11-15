@@ -16,7 +16,10 @@ export const register: Register = on => {
     if (e.surface !== 'terminal' || !OWN_PROMPT.has(e.props.origin.kind)) return next(e)
     const { Box, Text } = $.ui.resolve(e)
     return (
-      <Box flexDirection="row" backgroundColor={PALETTE.promptBg} paddingX={1}>
+      <Box flexDirection="row" backgroundColor={PALETTE.promptBg} paddingRight={1}>
+        <Box width={GUTTER} flexShrink={0}>
+          <Text color={PALETTE.promptBar} backgroundColor={PALETTE.promptBg}>▌</Text>
+        </Box>
         <Box width={GUTTER} flexShrink={0}>
           <Text color={PALETTE.promptFg} backgroundColor={PALETTE.promptBg} bold>❯</Text>
         </Box>

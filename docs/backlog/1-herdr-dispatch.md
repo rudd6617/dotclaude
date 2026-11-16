@@ -23,6 +23,18 @@
 - 借用：Pocock 的票以「驗收條件」為核心，所以 BRIEF 加上這一段。
 - 來源：github.com/mattpocock/sandcastle、github.com/mattpocock/skills
 
+## 和 DeepSeek Super-Agent 的差異
+
+- 來源：github.com/deepseek-ai/dsh-superagent-prototype（2026-11-16 讀 `docs/000`–`004` 與 `prompts/`）
+- 相同：一個主管負責分派；每張單有自己的 session 和目錄（他們也用 `git worktree`）；預設由人合併。
+- 不同：它服務一個團隊，入口是 GitHub 和飛書，目標是盡量不需要人看著；實作者不能直接問人。本設計只服務一個人，使用者在場，每一步都確認。
+- 借用（2026-11-16 使用者同意）：
+  1. 主管不寫需求：BRIEF 原文照貼使用者的話，驗收條件只寫使用者確認過的（出自 `prompts/dispatch.md`）
+  2. 固定的回報狀態：`ready` / `blocked` / `failed` / `dropped`，草稿沒做完算 `blocked`（出自 `prompts/work.md`）
+  3. 中斷後重開：先查 git 再動手，不重做（出自 `docs/003-execution.md` Restart 段）
+  4. 主管不輪詢（出自 `prompts/orchestrator.md`）
+- 不借：允許名單與自動接單、自建資料庫與面板、實作者不能問人、結束後重新開啟同一張單。理由是只有一個人在用，而且人在場。
+
 ## 檔案樹
 
 ```
@@ -60,12 +72,27 @@ dotclaude/
 
 **合併**（已定：方案 A）：主管在本機跑 `git merge --ff-only`，合併前問使用者。不開 PR。
 
-**BRIEF 分七段**：目標／驗收條件／scope／out-of-scope／ask-first／驗證指令／回報格式
+**BRIEF 分八段**：使用者原話／目標／驗收條件／scope／out-of-scope／ask-first／驗證指令／回報格式
+- 「使用者原話」一字不改照貼。實作者以原話為準，其他段落和原話衝突時照原話做。
+- 驗收條件、scope、out-of-scope 只能寫使用者親口確認過的內容。主管不得自行補充需求、實作計畫或檢查清單。
+
+**主管不輪詢**：開單後，這一輪就結束。主管不用 `sleep`、迴圈或 `herdr` 指令去看實作者的 tab。實作者的回報靠 herdr 通知送到使用者手上，使用者再回主管 tab 說要收單。
 
 **實作者模式**：
 - scope 以內：直接改、跑驗證，然後在自己的分支 commit，不用每一步都先提案
 - 碰到 ask-first 或 out-of-scope：停下來，在自己的 tab 問使用者（herdr 會亮 Done 通知）
 - 不准做的事：merge、push、刪 worktree
+- 開工前先看 `git log` 和 `git status`。如果分支上已經有 commit 或改動，代表前一個 agent 中途斷了；先弄清楚做到哪，再接著做，不重做已完成的部分
+- 結束時回報一個狀態，只能從下表選：
+
+| 狀態 | 意思 |
+|---|---|
+| `ready` | 做完了，自我審查過，驗證指令都跑過而且通過。等使用者看 |
+| `blocked` | 需要使用者決定或提供東西才能繼續。草稿沒做完也算這個，就算部分測試已經通過 |
+| `failed` | 做不到，附原因和試過的方法 |
+| `dropped` | 查過之後發現不用做，例如問題重現不了、已經有人修過了。附依據 |
+
+回報內容：狀態、改了什麼、實際跑過的驗證和結果、風險。
 
 ## 風險點
 

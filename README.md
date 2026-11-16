@@ -45,18 +45,14 @@ Personal Claude Code template — development principles, custom skills, hooks, 
 
 Encoded in `AGENTS.md`:
 
-1. **Programming taste** — design the data then the logic; reshape data instead of adding branches; max 3 levels of indentation, functions do one thing; names say *what*, not *how*
-2. **Never break existing behavior** — list impact before changing
-3. **Solve real problems** — complexity must match severity
-4. **Early return, fail fast** — errors surface immediately, no defensive try-catch
-5. **Conservative dependencies** — stdlib over third-party
-6. **Test-first bug fixes** — write a failing test before fixing; missing test seam is itself an architectural finding
-7. **Isolate changes only when needed** — work on the current branch by default; ask about a git worktree only when production runs from this folder or another session is editing the same repo
-8. **Touch only what's necessary** — no drive-by refactor / formatting / docstring
-9. **Ask when ambiguous** — list options, don't silently pick
-10. **Output is an interface** — conclusion first, tables over walls of prose, claims backed by evidence
-11. **Done has a definition** — verification run (result pasted), effect seen with your own eyes, verification entry point given, audit-type tasks list checked vs unchecked; missing any one means reporting progress, not completion
-12. **A correction is a spec** — one observed symptom is a hard rule applied to every like case inside the current change; the same correction twice means the verification method is broken, fix that first
+1. **Solve real problems** — complexity must match severity
+2. **Conservative dependencies** — stdlib over third-party
+3. **Test-first bug fixes** — write a failing test before fixing; missing test seam is itself an architectural finding
+4. **Isolate changes only when needed** — work on the current branch by default; ask about a git worktree only when production runs from this folder or another session is editing the same repo
+5. **Ask when ambiguous** — list options, don't silently pick
+6. **Output is an interface** — conclusion first; at most two options and one question when asking for a decision; three lines after "I don't follow"
+7. **Done has a definition** — verification run (result pasted), effect seen with your own eyes, verification entry point given, audit-type tasks list checked vs unchecked; missing any one means reporting progress, not completion
+8. **A correction is a spec** — one observed symptom is a hard rule applied to every like case inside the current change; the same correction twice means the verification method is broken, fix that first
 
 ## Document Roles
 
@@ -102,7 +98,7 @@ Typical flows:
 - Simple: just do it
 - Medium: `/r-grill` → implement → `/r-review`
 - Complex: `/r-grill` → `/r-plan` → implement → `/r-review`
-- Bug: failing test first, then fix (`AGENTS.md` principle 6)
+- Bug: failing test first, then fix (`AGENTS.md` principle 3)
 - Periodic: `/r-deepen`
 
 ## Self-Improvement Loop

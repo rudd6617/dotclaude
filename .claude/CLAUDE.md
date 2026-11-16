@@ -23,11 +23,11 @@
 | `/r-eli5` | 要把某個東西解釋給外行 / 主管 / 同事 | 大圖極少字的 HTML artifact，一次性不留檔 |
 | `/r-make` | 要整理 dev / check / deploy 等常用指令 | 寫或更新根目錄 Makefile：薄包裝現有指令，照風險加防呆 |
 
-典型流程（Workflow 六步的 skill 路由；步驟本體見 `AGENTS.md`）：
+典型流程（skill 路由；確認與規劃門檻見 `AGENTS.md` 的 Workflow）：
 - 簡單（單檔、無架構選擇）：直接做
 - 中等（2–3 檔、無架構取捨）：`/r-grill` → 動工 → `/r-review`
 - 複雜（≥4 檔 或 有架構取捨 或 不可逆）：`/r-grill` → `/r-plan` → 動工 → `/r-review`
-- 出 bug：先寫重現測試再修（`AGENTS.md` 原則 6）
+- 出 bug：先寫重現測試再修（`AGENTS.md` 原則 3）
 - 中後期回顧：`/r-deepen`
 - 對話收尾：`/r-handoff`
 

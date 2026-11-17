@@ -28,6 +28,17 @@ argument-hint: "[what the next session will focus on]"
 4. **長度上限** — Memory.md ≤ 4,000 字元。寫完跑 `wc -m .claude/Memory.md` 量一次，超過就刪到低於上限再回報。舊進展直接覆蓋，不要堆積。（hook 注入上限是 9,000 字元，要留一半以上給 Learning.md）
 5. **穩定的偏好/規則不進 Memory** — 那屬於 `AGENTS.md`；穩定的領域知識屬於 `.claude/Wiki.md`
 
+## 順便更新 backlog
+
+`.claude/open-todo-backlog.md` **存在才做**；不存在就跳過，不建檔。
+
+1. 照 `.claude/skills/r-backlog/SKILL.md` 的〈2. 找變動〉與〈3. 改檔規則〉更新它。
+2. 「待辦」裡比下一個 session 長命的項目，直接移進 backlog 對應的 `###` 分類，`Memory.md` 只留下個 session 要接的事。這裡不照 `r-backlog` 的「只建議、不自動搬」——交接時不多問，搬了什麼列在輸出裡。
+3. 搬完再量 `Memory.md` 的長度（規則 4）。
+4. 不列出全部剩餘項目，那是 `/r-backlog` 的事。
+
 ## 輸出
 
 更新 `.claude/Memory.md` 後，把更新後的「下次入口」與「建議 skill」兩段印出來給用戶確認。
+
+有更新 backlog 時，再加一段「backlog 本次變動」：刪除、新增、改寫、從 `Memory.md` 移入的各一行，每行附依據。沒有變動就寫「backlog 沒有變動」；檔案不存在就寫「沒有 backlog 檔，已跳過」。

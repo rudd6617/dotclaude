@@ -91,7 +91,7 @@ Roles are **not** baked into either file. `AGENTS.md` carries a short **Modes** 
 | `/r-deepen` | Codebase-level architecture review | Find shallow modules, weak seams, locality issues |
 | `/r-eli5` | Explaining something to an outsider | HTML artifact: big pictures, very few words |
 | `/r-make` | Collecting dev / check / deploy commands | Root Makefile wrapping existing commands, guards scaled to risk |
-| `/r-handoff` | End of a long session / before compaction | Compact into `.claude/Memory.md` |
+| `/r-handoff` | End of a long session / before compaction | Compact into `.claude/Memory.md`; if `open-todo-backlog.md` exists, update it and move long-lived to-dos there |
 | `/r-backlog` | Asking what is left / updating remaining work | Update `open-todo-backlog.md` from commits, tickets and the conversation; list every item and a suggested next one |
 
 Typical flows:
@@ -106,7 +106,7 @@ Typical flows:
 1. **SessionStart hook** runs `inject-memory.sh` — injects `.claude/Learning.md` and `.claude/Memory.md` as system context
 2. When Claude gets corrected, the lesson is appended to `.claude/Learning.md` (one `##` heading per lesson)
 3. When `Learning.md` grows past the threshold (≥40 entries / ≥400 lines / ≥9,000 injected characters — Claude Code cuts context past 10,000 to a 2,000-char preview), the hook nudges a convergence pass — merge duplicates, promote recurring lessons into `AGENTS.md` principles, prune stale entries (criteria in `docs/MAINTENANCE.md` §4)
-4. `/r-handoff` compacts the conversation into `Memory.md` so the next session picks up where you left off
+4. `/r-handoff` compacts the conversation into `Memory.md` so the next session picks up where you left off, and moves long-lived to-dos into `open-todo-backlog.md` when that file exists
 
 ADRs in `docs/adr/` are loaded on demand (not auto-injected) — they record one-shot decisions, not recurring patterns.
 

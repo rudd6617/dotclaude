@@ -67,6 +67,7 @@
 | `AGENTS.md` Language：回覆用繁體中文 | Stop hook `check-reply.py`（主要是英文就擋下改寫） |
 | 開場讀 `Memory.md`、`Learning.md` | SessionStart hook `inject-memory.sh` 自動注入 |
 | `Learning.md` 過量要收斂（§4 門檻） | `inject-memory.sh` 超過門檻時提醒 |
+| `AGENTS.md` 專案級預設：註解只留五種 | `/r-review` 標準軸 subagent 抽查（要手動觸發，不是機器擋；專案有 lint 時改成 lint 規則） |
 | 其餘 `AGENTS.md` 原則 | 無——需要判斷；被再犯時照上面規則升級 |
 
 判斷「會不會在別的 repo 再犯」：教訓裡若不含任何專案專名（檔名、業務詞）仍然成立 → 跨專案。

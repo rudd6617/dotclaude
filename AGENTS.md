@@ -79,6 +79,7 @@ IMPORTANT: 所有程式碼變更必須經過使用者確認後才可以執行。
 - 動到代碼或寫票前，用 `.claude/Wiki.md` 的既有詞彙，並尊重相關區域的 `docs/adr/`。
 - 命名跟著代碼與 glossary 走，不自創同義詞。
 - 動測試、DB、建置前先看 `.claude/Wiki.md` 的 Commands 段——各專案的驗證分級與動線寫在那裡，不在本檔。
+- 程式碼註解只留五種：授權聲明、公開 API 契約、解釋程式表達不了之限制的 issue/RFC 連結、外部依賴／平台／廠商／協定逼出的怪行為、`prettier-ignore` 與規則本身有誤／過度挑剔／純風格的 lint 抑制。解釋自家繞路寫法的註解不寫——會被下一個 agent 當成慣例照抄；改成把程式改到不需要解釋，限制放進測試或檢查的報錯訊息。例：`// 先 sleep 100ms，不然會 race` → 修掉 race，不寫註解。
 
 <!-- 下一段 Project Context 由專案自己寫：`sync.sh` 覆蓋 AGENTS.md 時會保留這一段，所以它要一直是最後一段。 -->
 ## Project Context

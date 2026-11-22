@@ -82,6 +82,7 @@ dotclaude/
 - scope 以內：直接改、跑驗證，然後在自己的分支 commit，不用每一步都先提案
 - 碰到 ask-first 或 out-of-scope：停下來，在自己的 tab 問使用者（herdr 會亮 Done 通知）
 - 不准做的事：merge、push、刪 worktree
+- BRIEF 寫的驗收條件就是全部門檻：不自己加檢查、審查輪或簽核（借自 pstack `worker.md`）
 - 開工前先看 `git log` 和 `git status`。如果分支上已經有 commit 或改動，代表前一個 agent 中途斷了；先弄清楚做到哪，再接著做，不重做已完成的部分
 - 結束時回報一個狀態，只能從下表選：
 

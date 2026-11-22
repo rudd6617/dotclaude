@@ -38,5 +38,5 @@
 ## Self-Improvement
 `.claude/Learning.md` 與 `.claude/Memory.md` 會透過 SessionStart hook 自動注入，不需手動讀取。
 Stop hook（`check-reply.py`）會把主要是英文的回覆擋下來要求改寫；對話超過 20 萬 token 時提醒使用者跑 `/r-handoff`。
-被糾正時，將教訓寫入 `.claude/Learning.md`（一條一個 `##` 標題）。
+被糾正時，先照 `docs/MAINTENANCE.md` §3 由強到弱找去處（結構 → hook/lint/型別 → 測試）；都做不到才寫入 `.claude/Learning.md`（一條一個 `##` 標題，寫明為何沒升到更強的一層）。
 條目累積過量時，hook 會提醒收斂（合併重複、升級成 `AGENTS.md` 原則、刪過期條目；判準見 `docs/MAINTENANCE.md` §4）。

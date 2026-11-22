@@ -62,7 +62,7 @@ Encoded in `AGENTS.md`:
 | `.claude/CLAUDE.md` | Claude-only layer: skill routing, hook mechanics. Imports `AGENTS.md` on its first line | Claude-specific mechanics change |
 | `docs/MAINTENANCE.md` | Edit zones, proposal format, sync discipline for institutional files | Before editing CLAUDE.md / skills / hooks |
 | `.claude/Memory.md` | Volatile session state — where to pick up | End of session (`/r-handoff`) or progress changes |
-| `.claude/Learning.md` | Recurring failure patterns & lessons | You got corrected and it could happen again |
+| `.claude/Learning.md` | Recurring failure patterns & lessons | You got corrected, it could happen again, and no structure / check / test can block it (`docs/MAINTENANCE.md` §3) |
 | `.claude/Wiki.md` | Long-term knowledge: background, stack, dirs, API, glossary | Aligning on a term / resolving a new concept |
 | `.claude/Verify.md` | Walkthrough playbook: launch, login, isolation, evidence, cleanup | Before the first UI walkthrough; when a step goes stale |
 | `docs/adr/NNNN-*.md` | Architecture decisions (why X not Y) | All three ADR conditions hold |
@@ -104,7 +104,7 @@ Typical flows:
 ## Self-Improvement Loop
 
 1. **SessionStart hook** runs `inject-memory.sh` — injects `.claude/Learning.md` and `.claude/Memory.md` as system context
-2. When Claude gets corrected, the lesson is appended to `.claude/Learning.md` (one `##` heading per lesson)
+2. When Claude gets corrected, the fix goes to the strongest layer that holds: structure → types / lint / hook → test. Only a lesson none of those can block is appended to `.claude/Learning.md` (one `##` heading per lesson, with why no stronger layer works). Each text rule's enforcer is tracked in `docs/MAINTENANCE.md` §3
 3. When `Learning.md` grows past the threshold (≥40 entries / ≥400 lines / ≥9,000 injected characters — Claude Code cuts context past 10,000 to a 2,000-char preview), the hook nudges a convergence pass — merge duplicates, promote recurring lessons into `AGENTS.md` principles, prune stale entries (criteria in `docs/MAINTENANCE.md` §4)
 4. `/r-handoff` compacts the conversation into `Memory.md` so the next session picks up where you left off, and moves long-lived to-dos into `open-todo-backlog.md` when that file exists
 

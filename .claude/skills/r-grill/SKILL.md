@@ -78,7 +78,7 @@ _Avoid_: Client, Buyer, Account
 
 **觸發條件**：三條件**全部成立**——hard to reverse / surprising without context / real trade-off。任一不成立，跳過。
 
-判準展開、什麼算 ADR、格式，全部見 `docs/ADR-FORMAT.md`；新增 ADR 寫入 `docs/adr/NNNN-*.md`。
+判準展開、什麼算 ADR、格式，全部見 `~/Documents/dotclaude/docs/ADR-FORMAT.md`；新增 ADR 寫入 `docs/adr/NNNN-*.md`。
 
 ## 何時停
 

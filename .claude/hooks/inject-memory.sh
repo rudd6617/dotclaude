@@ -37,7 +37,7 @@ $stripped
     entries=$(grep -c '^## ' "$LEARNING")
     lines=$(wc -l < "$LEARNING")
     if [ "$entries" -ge "$MAX_ENTRIES" ] || [ "$lines" -ge "$MAX_LINES" ]; then
-      NUDGE="[learning] Learning.md 已 ${entries} 條 / ${lines} 行，超過收斂門檻（${MAX_ENTRIES} 條 / ${MAX_LINES} 行）。建議收斂：合併重複、把反覆出現的教訓升級成 AGENTS.md 原則、刪過期條目（判準見 docs/MAINTENANCE.md §4）。
+      NUDGE="[learning] Learning.md 已 ${entries} 條 / ${lines} 行，超過收斂門檻（${MAX_ENTRIES} 條 / ${MAX_LINES} 行）。建議收斂：合併重複、把反覆出現的教訓升級成 AGENTS.md 原則、刪過期條目（判準見 ~/Documents/dotclaude/docs/MAINTENANCE.md §4）。
 "
     fi
   fi
@@ -57,7 +57,7 @@ fi
 
 chars=$(printf '%s' "$CONTENT" | python3 -c 'import sys; print(len(sys.stdin.read()))')
 if [ -z "$NUDGE" ] && [ "$chars" -ge "$MAX_CHARS" ]; then
-  NUDGE="[learning] 注入內容已 ${chars} 字元，超過 ${MAX_CHARS}；超過 10,000 會被截成 2,000 字預覽。建議收斂 Learning.md、精簡 Memory.md（判準見 docs/MAINTENANCE.md §4）。
+  NUDGE="[learning] 注入內容已 ${chars} 字元，超過 ${MAX_CHARS}；超過 10,000 會被截成 2,000 字預覽。建議收斂 Learning.md、精簡 Memory.md（判準見 ~/Documents/dotclaude/docs/MAINTENANCE.md §4）。
 "
 fi
 CONTENT="$NUDGE$CONTENT"

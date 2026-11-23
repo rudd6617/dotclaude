@@ -1,48 +1,72 @@
 #!/usr/bin/env bash
-# Sync this dotclaude template into a target project.
+# Install this dotclaude template machine-wide, and tidy projects to hold only
+# their own files.
 #
-# Overwrites template-managed files (AGENTS.md but its Project Context section,
-# CLAUDE.md, hooks). Template skills are linked into ~/.claude/skills instead of
-# copied, and any project copies of them are removed; project-only skills stay.
-# Seeds project-specific files only if missing — never clobbers the knowledge
-# you fill in per project (Wiki.md, Learning.md). Leaves volatile/local files
-# untouched (Memory.md, settings.local.json).
+# Global (every run): ~/.claude/CLAUDE.md and ~/.codex/AGENTS.md link to
+# global/; template skills link into ~/.claude/skills; the hooks are registered
+# in ~/.claude/settings.json and run straight from this repo. Nothing rule-like
+# is copied into projects, so editing dotclaude takes effect everywhere at once.
+#
+# Project: keeps only what is the project's own. AGENTS.md is cut down to its
+# ## Project Context section, .claude/CLAUDE.md becomes `@../AGENTS.md`, and old
+# template copies (hooks, settings.json, docs, skills) are removed. Wiki.md,
+# Learning.md, Verify.md and docs/adr/README.md are seeded only if missing.
+# Memory.md and settings.local.json are never touched.
 #
 # Usage:
+#   /path/to/dotclaude/sync.sh --global [-n|--dry-run]
 #   /path/to/dotclaude/sync.sh <target-project-dir> [-n|--dry-run]
 #   /path/to/dotclaude/sync.sh --all <parent-dir>... [-n|--dry-run]
 #
-# --all syncs every project directly under the given parent dirs that already
-# carries the template (.claude/hooks/inject-memory.sh). It skips a project that
-# is not a clean git repo, so an overwrite can always be reviewed and reverted,
-# and asks once before writing.
-#
-# Re-run any time the template updates to pull the latest in.
+# --all handles every project directly under the given parent dirs whose
+# .claude/CLAUDE.md starts with `@../AGENTS.md`. It skips a project that is not
+# a clean git repo, so every change can be reviewed and reverted, and asks once
+# before writing.
 
 set -euo pipefail
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-DRY=0; ALL=0; DIRS=()
+DRY=0; ALL=0; GLOBAL_ONLY=0; DIRS=()
 for a in "$@"; do
   case "$a" in
     -n|--dry-run) DRY=1 ;;
     --all) ALL=1 ;;
+    --global) GLOBAL_ONLY=1 ;;
     -*) echo "unknown flag: $a" >&2; exit 2 ;;
     *)  DIRS+=("$a") ;;
   esac
 done
-usage() { echo "usage: sync.sh <target-project-dir> [-n|--dry-run]
+usage() { echo "usage: sync.sh --global [-n|--dry-run]
+       sync.sh <target-project-dir> [-n|--dry-run]
        sync.sh --all <parent-dir>... [-n|--dry-run]" >&2; exit 2; }
+
+run() { if [ "$DRY" -eq 1 ]; then echo "  [dry-run] $*"; else "$@"; fi; }
+write() { # path, content
+  if [ "$DRY" -eq 1 ]; then echo "  [dry-run] write $1"; else printf '%s' "$2" > "$1"; fi
+}
+
+PROJECT_CLAUDE='@../AGENTS.md'
+HOOK_NAMES=(inject-memory.sh check-reply.py)
+LEGACY_DOCS=(docs/ADR-FORMAT.md docs/MAINTENANCE.md)
+SEED=(.claude/Wiki.md .claude/Learning.md .claude/Verify.md docs/adr/README.md)
+CONTEXT_HEAD='## Project Context'
+CONTEXT_PLACEHOLDER="$CONTEXT_HEAD
+
+（請填：這個專案是什麼、給誰用、技術棧一兩句。長期知識見 \`.claude/Wiki.md\`。）
+"
+
+is_template_project() { head -n1 "$1/.claude/CLAUDE.md" 2>/dev/null | grep -qxF "$PROJECT_CLAUDE"; }
 
 if [ "$ALL" -eq 1 ]; then
   [ "${#DIRS[@]}" -ge 1 ] || usage
   targets=()
   for parent in "${DIRS[@]}"; do
-    for hook in "$parent"/*/.claude/hooks/inject-memory.sh; do
-      [ -e "$hook" ] || continue
-      dir="$(cd "$(dirname "$hook")/../.." && pwd)"
+    for claude in "$parent"/*/.claude/CLAUDE.md; do
+      [ -e "$claude" ] || continue
+      dir="$(cd "$(dirname "$claude")/.." && pwd)"
       [ "$dir" != "$SRC" ] || continue
+      is_template_project "$dir" || continue
       if [ ! -d "$dir/.git" ]; then echo "skip   $dir (not a git repo)"; continue; fi
       if [ -n "$(git -C "$dir" status --porcelain)" ]; then echo "skip   $dir (uncommitted changes)"; continue; fi
       echo "sync   $dir"
@@ -61,107 +85,163 @@ if [ "$ALL" -eq 1 ]; then
   exit 0
 fi
 
-[ "${#DIRS[@]}" -eq 1 ] || usage
-DST="${DIRS[0]}"
-DST="$(cd "$DST" && pwd)"
-[ "$SRC" != "$DST" ] || { echo "refusing to sync onto the template itself" >&2; exit 1; }
+link() { # target, link-path
+  if [ -e "$2" ] && [ ! -L "$2" ]; then echo "  skip   $2 (a real file; left alone)"; return; fi
+  [ "$(readlink "$2" 2>/dev/null)" = "$1" ] && { echo "  ok     $2"; return; }
+  run mkdir -p "$(dirname "$2")"
+  run ln -sfn "$1" "$2"
+  echo "  link   $2 -> $1"
+}
 
-# Template-managed → overwrite (single source of truth).
-MANAGED=(
-  "AGENTS.md"                  # 家規（工具無關規則源頭）；.claude/CLAUDE.md 靠 @../AGENTS.md 吸入
-  ".claude/CLAUDE.md"
-  ".claude/hooks"
-  ".claude/settings.json"      # project-specific overrides go in settings.local.json
-  "docs/ADR-FORMAT.md"
-  "docs/MAINTENANCE.md"
-  "docs/adr/README.md"
-)
+register_hooks() {
+  local settings="$HOME/.claude/settings.json"
+  if [ "$DRY" -eq 1 ]; then echo "  [dry-run] register hooks in $settings"; return; fi
+  mkdir -p "$(dirname "$settings")"
+  python3 - "$settings" "$SRC/.claude/hooks" <<'PY'
+import json, os, sys
+path, hooks_dir = sys.argv[1], sys.argv[2]
+data = json.load(open(path)) if os.path.exists(path) else {}
+wanted = {
+    "SessionStart": f"bash '{hooks_dir}/inject-memory.sh'",
+    "Stop": f"python3 '{hooks_dir}/check-reply.py'",
+}
+changed = False
+for event, command in wanted.items():
+    groups = data.setdefault("hooks", {}).setdefault(event, [])
+    name = os.path.basename(command.split("'")[1])
+    present = [h for g in groups for h in g.get("hooks", []) if name in h.get("command", "")]
+    if any(h["command"] == command for h in present):
+        print(f"  ok     {event} {name}")
+        continue
+    for g in groups:
+        g["hooks"] = [h for h in g.get("hooks", []) if name not in h.get("command", "")]
+    groups[:] = [g for g in groups if g["hooks"]]
+    groups.append({"matcher": "", "hooks": [{"type": "command", "command": command, "timeout": 10}]})
+    changed = True
+    print(f"  hook   {event} {name}")
+if changed:
+    tmp = path + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    os.replace(tmp, path)
+PY
+}
 
-# Seed only if absent → never overwrite filled-in project knowledge.
-SEED=(
-  ".claude/Wiki.md"
-  ".claude/Learning.md"
-  ".claude/Verify.md"
-)
-
-run() { [ "$DRY" -eq 1 ] && echo "  [dry-run] $*" || eval "$*"; }
-
-# AGENTS.md is the template's except its last section, ## Project Context,
-# which describes the project. Remember the project's own text before the
-# overwrite and put it back after. Relies on that section staying last.
-CONTEXT_HEAD='## Project Context'
-project_context() { awk -v h="$CONTEXT_HEAD" '$0==h{on=1} on' "$1"; }
-before_context() { awk -v h="$CONTEXT_HEAD" '$0==h{exit} {print}' "$1"; }
-OLD_CONTEXT=""
-[ -f "$DST/AGENTS.md" ] && OLD_CONTEXT="$(project_context "$DST/AGENTS.md")"
-TEMPLATE_CONTEXT="$(project_context "$SRC/AGENTS.md")"
-
-[ "$DRY" -eq 1 ] && tag=" (dry-run)" || tag=""
-echo "sync: $SRC  ->  $DST$tag"
-echo "overwrite (template):"
-for rel in "${MANAGED[@]}"; do
-  [ -e "$SRC/$rel" ] || { echo "  skip   $rel (missing in template)"; continue; }
-  run "mkdir -p '$DST/$(dirname "$rel")'"
-  if [ -d "$SRC/$rel" ]; then
-    run "rm -rf '$DST/$rel'"          # mirror deletions (e.g. a removed skill)
-    run "cp -a '$SRC/$rel' '$DST/$rel'"
-  else
-    run "cp -a '$SRC/$rel' '$DST/$rel'"
-  fi
-  echo "  ok     $rel"
-done
-if [ -n "$OLD_CONTEXT" ] && [ "$OLD_CONTEXT" != "$TEMPLATE_CONTEXT" ]; then
-  if [ "$DRY" -eq 0 ]; then
-    { before_context "$SRC/AGENTS.md"; printf '%s\n' "$OLD_CONTEXT"; } > "$DST/AGENTS.md"
-  fi
-  echo "  keep   AGENTS.md $CONTEXT_HEAD (the project's own)"
-fi
-
-# Skills are not copied. Each template skill is linked into ~/.claude/skills,
-# so every project sees the latest one without a sync. A project keeps only its
-# own skills: copies of template skills, current or retired, are removed from it.
 template_skills() { for d in "$SRC"/.claude/skills/*/; do basename "$d"; done; }
 retired_skills() {
   git -C "$SRC" log --diff-filter=D --name-only --format= -- '.claude/skills/r-*/SKILL.md' | awk -F/ '{print $3}'
 }
 
-echo "skills (linked into ~/.claude/skills):"
-GLOBAL="$HOME/.claude/skills"
-run "mkdir -p '$GLOBAL'"
-for name in $(template_skills); do
-  link="$GLOBAL/$name"
-  if [ -e "$link" ] && [ ! -L "$link" ]; then echo "  skip   $link (not a link; left alone)"; continue; fi
-  run "ln -sfn '$SRC/.claude/skills/$name' '$link'"
-  echo "  link   $name"
-done
-for link in "$GLOBAL"/*; do
-  [ -L "$link" ] && [ ! -e "$link" ] || continue
-  case "$(readlink "$link")" in "$SRC/.claude/skills/"*) ;; *) continue ;; esac
-  run "rm '$link'"
-  echo "  unlink $(basename "$link") (dropped from template)"
-done
+install_global() {
+  echo "global:"
+  link "$SRC/global/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+  link "$SRC/global/AGENTS.md" "$HOME/.codex/AGENTS.md"
+  register_hooks
+  echo "skills (linked into ~/.claude/skills):"
+  local skills_dir="$HOME/.claude/skills" name l
+  run mkdir -p "$skills_dir"
+  for name in $(template_skills); do
+    l="$skills_dir/$name"
+    if [ -e "$l" ] && [ ! -L "$l" ]; then echo "  skip   $l (not a link; left alone)"; continue; fi
+    run ln -sfn "$SRC/.claude/skills/$name" "$l"
+    echo "  link   $name"
+  done
+  for l in "$skills_dir"/*; do
+    [ -L "$l" ] && [ ! -e "$l" ] || continue
+    case "$(readlink "$l")" in "$SRC/.claude/skills/"*) ;; *) continue ;; esac
+    run rm "$l"
+    echo "  unlink $(basename "$l") (dropped from template)"
+  done
+}
 
-echo "skills (template copies removed from project):"
-SKILLS_DST="$DST/.claude/skills"
-MANIFEST="$SKILLS_DST/.template-skills"
-for name in $( { template_skills; retired_skills; cat "$MANIFEST" 2>/dev/null; } | sort -u); do
-  [ -e "$SKILLS_DST/$name" ] || continue
-  run "rm -rf '$SKILLS_DST/$name'"
-  echo "  remove $name"
-done
-if [ -f "$MANIFEST" ]; then run "rm '$MANIFEST'"; fi
+# A project settings.json is the template's when its only content is hooks that
+# run the template's hook scripts; anything else is the project's own.
+template_settings() {
+  python3 - "$1" "${HOOK_NAMES[@]}" <<'PY'
+import json, sys
+data = json.load(open(sys.argv[1]))
+names = sys.argv[2:]
+cmds = [h.get("command", "") for gs in data.get("hooks", {}).values() for g in gs for h in g.get("hooks", [])]
+ok = set(data) <= {"hooks"} and all(any(n in c for n in names) for c in cmds)
+sys.exit(0 if ok else 1)
+PY
+}
 
-echo "seed (only if missing):"
-for rel in "${SEED[@]}"; do
-  [ -e "$SRC/$rel" ] || { echo "  skip   $rel (missing in template)"; continue; }
-  if [ -e "$DST/$rel" ]; then
-    echo "  keep   $rel (already exists)"
+sync_project() {
+  local dst="$1" rel f own context
+  echo "project: $dst"
+
+  if [ -f "$dst/AGENTS.md" ] && grep -q '^# 家規' "$dst/AGENTS.md"; then
+    context="$(awk -v h="$CONTEXT_HEAD" '$0==h{on=1} on' "$dst/AGENTS.md")"
+    if [ -z "$context" ] || grep -q '請依專案填寫' <<<"$context"; then context="$CONTEXT_PLACEHOLDER"; else context="$context
+"; fi
+    write "$dst/AGENTS.md" "$context"
+    echo "  trim   AGENTS.md (kept $CONTEXT_HEAD only)"
+  elif [ ! -e "$dst/AGENTS.md" ]; then
+    write "$dst/AGENTS.md" "$CONTEXT_PLACEHOLDER"
+    echo "  seed   AGENTS.md"
   else
-    run "mkdir -p '$DST/$(dirname "$rel")'"
-    run "cp -a '$SRC/$rel' '$DST/$rel'"
-    echo "  seed   $rel"
+    echo "  keep   AGENTS.md (the project's own)"
   fi
-done
 
-echo "untouched: .claude/Memory.md, .claude/settings.local.json (volatile/local)"
+  if [ ! -e "$dst/.claude/CLAUDE.md" ] || grep -q '^# Claude Code 專屬設定' "$dst/.claude/CLAUDE.md"; then
+    run mkdir -p "$dst/.claude"
+    write "$dst/.claude/CLAUDE.md" "$PROJECT_CLAUDE
+"
+    echo "  write  .claude/CLAUDE.md ($PROJECT_CLAUDE)"
+  else
+    echo "  keep   .claude/CLAUDE.md (the project's own)"
+  fi
+
+  if [ -d "$dst/.claude/hooks" ]; then
+    own=""
+    for f in "$dst/.claude/hooks"/*; do
+      [ -e "$f" ] || continue
+      case " ${HOOK_NAMES[*]} " in *" $(basename "$f") "*) ;; *) own="$own $(basename "$f")" ;; esac
+    done
+    if [ -z "$own" ]; then run rm -rf "$dst/.claude/hooks"; echo "  remove .claude/hooks (template copy)"
+    else echo "  keep   .claude/hooks (has the project's own:$own)"; fi
+  fi
+  if [ -f "$dst/.claude/settings.json" ]; then
+    if template_settings "$dst/.claude/settings.json"; then run rm "$dst/.claude/settings.json"; echo "  remove .claude/settings.json (template copy)"
+    else echo "  keep   .claude/settings.json (has the project's own settings; drop its template hooks by hand)"; fi
+  fi
+  for rel in "${LEGACY_DOCS[@]}"; do
+    [ -e "$dst/$rel" ] || continue
+    run rm "$dst/$rel"
+    echo "  remove $rel (read from dotclaude now)"
+  done
+
+  local skills_dst="$dst/.claude/skills" manifest="$dst/.claude/skills/.template-skills" name
+  for name in $( { template_skills; retired_skills; cat "$manifest" 2>/dev/null; } | sort -u); do
+    [ -e "$skills_dst/$name" ] || continue
+    run rm -rf "$skills_dst/$name"
+    echo "  remove skill $name (template copy)"
+  done
+  if [ -f "$manifest" ]; then run rm "$manifest"; fi
+
+  for rel in "${SEED[@]}"; do
+    [ -e "$SRC/$rel" ] || continue
+    [ -e "$dst/$rel" ] && continue
+    run mkdir -p "$(dirname "$dst/$rel")"
+    run cp -a "$SRC/$rel" "$dst/$rel"
+    echo "  seed   $rel"
+  done
+  echo "  untouched: .claude/Memory.md, .claude/settings.local.json"
+}
+
+[ "$DRY" -eq 1 ] && echo "(dry-run)"
+if [ "$GLOBAL_ONLY" -eq 1 ]; then
+  [ "${#DIRS[@]}" -eq 0 ] || usage
+  install_global
+  echo "done."
+  exit 0
+fi
+
+[ "${#DIRS[@]}" -eq 1 ] || usage
+DST="$(cd "${DIRS[0]}" && pwd)"
+[ "$SRC" != "$DST" ] || { echo "refusing to sync onto the template itself" >&2; exit 1; }
+install_global
+sync_project "$DST"
 echo "done."

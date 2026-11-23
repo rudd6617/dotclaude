@@ -6,9 +6,12 @@ Personal Claude Code template — development principles, custom skills, hooks, 
 
 ```
 .
-├── AGENTS.md                     # House rules — principles, modes, workflow, git. Tool-agnostic; every agent reads this
+├── global/                       # Loaded machine-wide, never copied into projects
+│   ├── AGENTS.md                 # House rules — principles, modes, workflow, git. Tool-agnostic; linked as ~/.codex/AGENTS.md
+│   └── CLAUDE.md                 # Claude-only layer: skill routing, hooks. Linked as ~/.claude/CLAUDE.md; imports global/AGENTS.md
+├── AGENTS.md                     # This repo's own Project Context (every project has one)
 ├── tools/                        # usage-*.py: mine ~/.claude transcripts for usage stats, corrections, hook sizes
-├── sync.sh                       # Push template updates into another project (overwrite managed, keep yours)
+├── sync.sh                       # Install the global links + hooks; tidy a project down to its own files
 ├── docs/
 │   ├── ADR-FORMAT.md             # ADR template
 │   ├── MAINTENANCE.md            # How institutional files get edited (zones, proposal format, sync)
@@ -18,12 +21,11 @@ Personal Claude Code template — development principles, custom skills, hooks, 
 │   └── letter-to-future-sessions.md      # Read once per new machine/major model change
 ├── .out-of-scope/                # Rejected proposals (why NOT to do X)
 └── .claude/
-    ├── CLAUDE.md                 # Claude-only layer: skill routing, hooks. First line `@../AGENTS.md` pulls in the house rules
+    ├── CLAUDE.md                 # One line `@../AGENTS.md`: pulls in this repo's Project Context
     ├── Wiki.md                   # Long-term knowledge: background, stack, dirs, API, glossary
     ├── Verify.md                 # Walkthrough playbook: launch, login, isolation, evidence, cleanup
     ├── Memory.md                 # Volatile session state — where to pick up (gitignored in this repo; per-project choice)
     ├── Learning.md               # Accumulated mistakes & lessons (auto-injected)
-    ├── settings.json             # Hooks (SessionStart memory injection)
     ├── settings.local.json       # Local permissions
     ├── hooks/
     │   ├── inject-memory.sh      # Auto-inject Learning + Memory; nudge a convergence pass past threshold
@@ -58,8 +60,9 @@ Encoded in `AGENTS.md`:
 
 | File | Purpose | When |
 |---|---|---|
-| `AGENTS.md` | **House rules** — principles, modes, workflow, git conventions. Tool-agnostic: Claude, Codex, Gemini all read it | Rules change (edit in this repo, then sync) |
-| `.claude/CLAUDE.md` | Claude-only layer: skill routing, hook mechanics. Imports `AGENTS.md` on its first line | Claude-specific mechanics change |
+| `global/AGENTS.md` | **House rules** — principles, modes, workflow, git conventions. Tool-agnostic: Claude and Codex both load it machine-wide | Rules change (edit here, commit — live everywhere) |
+| `global/CLAUDE.md` | Claude-only layer: skill routing, hook mechanics. Imports `global/AGENTS.md` on its first line | Claude-specific mechanics change |
+| project `AGENTS.md` | The project's own `## Project Context`; its `.claude/CLAUDE.md` is just `@../AGENTS.md` | Project scope or stack changes |
 | `docs/MAINTENANCE.md` | Edit zones, proposal format, sync discipline for institutional files | Before editing CLAUDE.md / skills / hooks |
 | `.claude/Memory.md` | Volatile session state — where to pick up | End of session (`/r-handoff`) or progress changes |
 | `.claude/Learning.md` | Recurring failure patterns & lessons | You got corrected, it could happen again, and no structure / check / test can block it (`docs/MAINTENANCE.md` §3) |
@@ -74,10 +77,12 @@ Claude Code only reads `CLAUDE.md`; Codex only reads `AGENTS.md`; Gemini CLI onl
 
 So the rules split by **audience, not by tool**:
 
-- **`AGENTS.md`** — everything tool-agnostic. Codex and friends read it directly; Claude Code pulls it in via `@../AGENTS.md` on the first line of `.claude/CLAUDE.md` (verified: relative imports resolve against the importing file, max 4 hops deep).
-- **`.claude/CLAUDE.md`** — only what is Claude-specific: the `/r-*` skill table and the SessionStart hook.
+- **`global/AGENTS.md`** — everything tool-agnostic. Codex reads it as `~/.codex/AGENTS.md`; Claude Code pulls it in via the `@~/Documents/dotclaude/global/AGENTS.md` import on the first line of `global/CLAUDE.md`.
+- **`global/CLAUDE.md`** — only what is Claude-specific: the `/r-*` skill table and the hooks. Linked as `~/.claude/CLAUDE.md`.
 
-Roles are **not** baked into either file. `AGENTS.md` carries a short **Modes** section instead — *default mode* (serving the user directly: read Memory/Learning, confirm before changing code) and *reviewer mode* (dispatched to audit code: read none of that, no edits, no commits). The dispatcher names the mode in its prompt, e.g. *"review X in reviewer mode per AGENTS.md"*. `codex exec` and `codex review` auto-load the project's root `AGENTS.md` on every call, so nothing else has to be wired up. Add a mode by adding a short subsection — not a new directory.
+Both are user-level, so one edit here reaches every project with no sync. The project's own description stays in the project: root `AGENTS.md` (read by Codex directly, by Claude through the project's one-line `.claude/CLAUDE.md`).
+
+Roles are **not** baked into either file. `AGENTS.md` carries a short **Modes** section instead — *default mode* (serving the user directly: read Memory/Learning, confirm before changing code) and *reviewer mode* (dispatched to audit code: read none of that, no edits, no commits). The dispatcher names the mode in its prompt, e.g. *"review X in reviewer mode per AGENTS.md"*. `codex exec` and `codex review` auto-load `~/.codex/AGENTS.md` and the project's root `AGENTS.md` on every call, so nothing else has to be wired up. Add a mode by adding a short subsection — not a new directory.
 
 ## Custom Skills
 
@@ -112,30 +117,33 @@ ADRs in `docs/adr/` are loaded on demand (not auto-injected) — they record one
 
 ## User-Level Tools
 
-This repo holds only what gets synced into projects. Machine-wide Claude Code tools — the status line and mods (e.g. the `ports-backlog` pane) — live in the [dotfiles](https://github.com/rudd6617/dotfiles) repo under `claude/`, installed by its `install.sh`.
+This repo holds the house rules, skills and hooks. Machine-wide Claude Code tools — the status line and mods (e.g. the `ports-backlog` pane) — live in the [dotfiles](https://github.com/rudd6617/dotfiles) repo under `claude/`, installed by its `install.sh`.
 
 ## Usage
 
-Clone this repo and open it with Claude Code. The `.claude/` config is picked up automatically.
-
-**First time in another project** — run the sync script from the target project (or pass its path):
+Clone this repo to `~/Documents/dotclaude` (the rules reference that path), then install it machine-wide once:
 
 ```bash
-/path/to/dotclaude/sync.sh /path/to/your-project        # add --dry-run to preview
-/path/to/dotclaude/sync.sh --all ~/Documents ~/services  # every clean git project that already carries the template
+~/Documents/dotclaude/sync.sh --global      # ~/.claude/CLAUDE.md, ~/.codex/AGENTS.md, skills, hooks; add --dry-run to preview
 ```
 
-Then fill `.claude/Wiki.md` (stack, glossary, etc.) and add ADRs as decisions arise.
+After that, editing anything under `global/`, `.claude/skills/` or `.claude/hooks/` takes effect in every project at once — no sync. Re-run `--global` only after adding or removing a skill.
 
-**Updating an existing project** — re-run the same command after pulling template changes. `sync.sh` is the single source of truth for what travels:
+**A project** holds only its own files. Set one up, or tidy a project from the old copy-everything layout:
+
+```bash
+~/Documents/dotclaude/sync.sh /path/to/your-project         # add --dry-run to preview
+~/Documents/dotclaude/sync.sh --all ~/Documents ~/services   # every clean git project that carries the template
+```
 
 | | Files | On sync |
 |---|---|---|
-| **Template** | `AGENTS.md`, `CLAUDE.md`, `hooks/`, `settings.json`, `docs/ADR-FORMAT.md`, `docs/MAINTENANCE.md`, `docs/adr/README.md` | **Overwritten** (project overrides go in `settings.local.json`) |
-| **Skills** | `.claude/skills/r-*` | **Linked** into `~/.claude/skills`, not copied; template copies in the project are removed, the project's own skills stay |
-| **Project knowledge** | `Wiki.md`, `Learning.md`, `Verify.md` | **Seeded only if missing** — never clobbered |
+| **Rules** | `AGENTS.md` | Cut down to its `## Project Context` section (the rules are global now) |
+| **Claude entry** | `.claude/CLAUDE.md` | Becomes `@../AGENTS.md` |
+| **Old template copies** | `.claude/hooks/`, `.claude/settings.json`, `docs/ADR-FORMAT.md`, `docs/MAINTENANCE.md`, `.claude/skills/r-*` | **Removed** — kept with a warning if they hold the project's own hooks or settings |
+| **Project knowledge** | `Wiki.md`, `Learning.md`, `Verify.md`, `docs/adr/README.md` | **Seeded only if missing** — never clobbered |
 | **Volatile / local** | `Memory.md`, `settings.local.json` | **Untouched** |
 
 Whether `.claude/Memory.md` is version-controlled is **each project's call** — `sync.sh` never touches it and `.gitignore` is not synced. This repo ignores it; a project handed off across machines may commit it instead, at the cost of merge conflicts between parallel sessions. Check which you have with `git ls-files .claude/Memory.md`.
 
-Rule of thumb: never edit template-managed files inside a project — edit them here, commit, re-sync (details: `docs/MAINTENANCE.md`).
+Rule of thumb: house rules, skills and hooks are edited here only; a project's own `AGENTS.md`, Wiki and Learning are edited in the project (details: `docs/MAINTENANCE.md`).

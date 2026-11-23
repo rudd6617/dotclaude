@@ -2,12 +2,12 @@
 
 <!--
 本檔記錄重複出現的失敗模式與學到的教訓：bug 復盤、踩坑、錯誤用法、反直覺結論、優化經驗。
-被糾正且推測會再犯時，先照 docs/MAINTENANCE.md §3 試結構、hook/lint、測試；都做不到才在這裡新增一條。
+被糾正且推測會再犯時，先照 ~/Documents/dotclaude/docs/MAINTENANCE.md §3 試結構、hook/lint、測試；都做不到才在這裡新增一條。
 SessionStart hook 會注入本檔。條目再犯、或後來做出了檢查，就照 §3 升級並刪掉該條。
 與 docs/adr/ 的差別：ADR 是一次性決策（有編號、不刪）；Learning 可演化、可整併。
 
 收斂：條目會累積。當條目 ≥ 40 條 或本檔 ≥ 400 行時，SessionStart 會提醒收斂——
-合併重複、把反覆出現的教訓升級成 AGENTS.md 原則、刪掉過期條目（判準見 docs/MAINTENANCE.md §4）。
+合併重複、把反覆出現的教訓升級成 AGENTS.md 原則、刪掉過期條目（判準見 ~/Documents/dotclaude/docs/MAINTENANCE.md §4）。
 
 格式（每條一個第二級標題，即行首 "## " 開頭）：
   ## <一句話標題：錯了什麼>

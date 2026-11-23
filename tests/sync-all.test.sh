@@ -83,6 +83,11 @@ mkdir -p "$root/bare/.claude"
 printf '# 家規\n\n## Project Context\n\n通用模板（請依專案填寫）。\n' > "$root/bare/AGENTS.md"
 "$SYNC" "$root/bare" >/dev/null
 grep -q '請填' "$root/bare/AGENTS.md" && ! grep -q '請依專案填寫' "$root/bare/AGENTS.md"; check "placeholder context replaced" $?
+mkdir -p "$root/added/.claude"
+printf '# 家規\n\n## Project Context\n\n通用模板（請依專案填寫）。\n\n- **上線前不留待辦**：專案自訂規則。\n' > "$root/added/AGENTS.md"
+"$SYNC" "$root/added" >/dev/null
+grep -q '^- \*\*上線前不留待辦\*\*：專案自訂規則。$' "$root/added/AGENTS.md" && ! grep -q '請依專案填寫\|請填' "$root/added/AGENTS.md"
+check "project lines after the placeholder kept" $?
 mkdir -p "$root/empty"; "$SYNC" "$root/empty" >/dev/null
 grep -q '^## Project Context$' "$root/empty/AGENTS.md" && migrated "$root/empty"; check "missing AGENTS.md seeded" $?
 

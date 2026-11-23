@@ -173,9 +173,9 @@ sync_project() {
   echo "project: $dst"
 
   if [ -f "$dst/AGENTS.md" ] && grep -q '^# 家規' "$dst/AGENTS.md"; then
-    context="$(awk -v h="$CONTEXT_HEAD" '$0==h{on=1} on' "$dst/AGENTS.md")"
-    if [ -z "$context" ] || grep -q '請依專案填寫' <<<"$context"; then context="$CONTEXT_PLACEHOLDER"; else context="$context
-"; fi
+    context="$(awk -v h="$CONTEXT_HEAD" '$0==h{on=1} on && !/請依專案填寫/' "$dst/AGENTS.md" | cat -s)"
+    if grep -qvE "^[[:space:]]*$|^$CONTEXT_HEAD\$" <<<"$context"; then context="$context
+"; else context="$CONTEXT_PLACEHOLDER"; fi
     write "$dst/AGENTS.md" "$context"
     echo "  trim   AGENTS.md (kept $CONTEXT_HEAD only)"
   elif [ ! -e "$dst/AGENTS.md" ]; then

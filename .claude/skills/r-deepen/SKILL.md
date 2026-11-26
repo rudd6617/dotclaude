@@ -57,4 +57,4 @@ Deepen: $ARGUMENTS
 不要先提介面設計。問用戶：「哪幾個你想推進？」
 
 ### 3. Drill
-進入對選定候選的細節討論。新概念加入 `.claude/Wiki.md` 術語段。被否決且有 load-bearing 理由的，提議寫 ADR 防止未來再被建議。
+進入對選定候選的細節討論：依賴分類、測試策略、介面比較、ADR 衝突照同資料夾的 `DEEPENING.md` 做。新概念加入 `.claude/Wiki.md` 術語段。被否決且有 load-bearing 理由的，提議寫 ADR 防止未來再被建議。

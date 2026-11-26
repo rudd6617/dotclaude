@@ -68,7 +68,7 @@ dotclaude/
 
 **收單**（`ticket.sh close <專案> <slug>`）：
 1. 檢查 worktree 沒有未提交的改動，而且分支已經合進 main。任何一項不成立就停下來，不刪
-2. `git worktree remove` → `git branch -d` → `herdr tab close`
+2. `herdr tab close` → `git worktree remove` → `git branch -d`。先關 tab：實作者的 shell 開在 worktree 裡，先移除 worktree 那個 shell 會壞掉
 
 **合併**（已定：方案 A）：主管在本機跑 `git merge --ff-only`，合併前問使用者。不開 PR。
 

@@ -33,7 +33,7 @@
 ### 審查員模式（被派工審碼）
 
 - **不讀** `.claude/Memory.md`、`.claude/Learning.md`、backlog、前一輪審查報告——不帶實作方的記憶與假設，是這個模式唯一的價值來源。
-- 零改檔、零 commit。
+- 零改檔、零 commit。派 codex 當審查員時用唯讀 sandbox 讓改檔做不到：`codex exec -s read-only`（`codex review` 用 `-c sandbox_mode="read-only"`）。
 - 只回報：結論先行，每條附 `檔案:行號` 與依據，末尾附「已查 vs 未查」清單。
 - 適用：`codex exec` / `codex review` / Claude 的審查 subagent。
 

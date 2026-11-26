@@ -2,7 +2,7 @@
 name: r-multi-review
 description: |
   Multi-model grounded + adversarial review to catch hallucinations and requirement gaps
-  before finalizing an output. Runs 2 blind grounded verifiers (opus + sonnet) then an
+  before finalizing an output. Runs 2 blind grounded verifiers (opus + codex) then an
   adversarial refuter, consolidates, and hands disputes to the user.
   Use before committing code, publishing a doc, or locking a design — especially when
   hallucinated facts or missed requirements would be costly.
@@ -30,14 +30,14 @@ Multi-model review of a產出物。目標：抓**事實幻覺**與**需求缺漏
 
 用 Workflow 工具跑下面腳本（子代理的 grep/測試輸出隔離在主上下文外，省 context）。透過 `args` 傳入 Phase 0 的四個值。
 
-**Fallback（工具清單裡沒有 Workflow 時）**：不要硬跑。改用 Agent 工具平行 spawn 等價的 subagent——R1 兩個盲審（一個 `model: opus`、一個 `model: sonnet`，各給下方 R1 prompt、斷言清單與 artifact，互不知對方存在），收齊後再 spawn R2 反駁者（`model: opus`，給下方 R2 prompt 與 R1 結果）。回報格式照舊。
+**Fallback（工具清單裡沒有 Workflow 時）**：不要硬跑。改用 Agent 工具平行 spawn 等價的 subagent——R1 兩個盲審（一個 `model: opus` 給下方 groundPrompt，一個 `model: sonnet` 給 codexPrompt 轉送給 codex，互不知對方存在），收齊後再 spawn R2 反駁者（`model: opus`，給下方 R2 prompt 與 R1 結果）。回報格式照舊。
 
 ```js
 export const meta = {
   name: 'r-multi-review',
   description: 'Grounded + adversarial multi-model review for hallucinations and gaps',
   phases: [
-    { title: 'R1-Ground', detail: '2 blind grounded verifiers (opus + sonnet)' },
+    { title: 'R1-Ground', detail: '2 blind grounded verifiers (opus + codex)' },
     { title: 'R2-Refute', detail: 'adversarial refuter over surviving claims' },
   ],
 }
@@ -47,11 +47,8 @@ const { requirement, artifact, artifactKind, claims } = args
 const CLAIM_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['claims'],
   properties: {
-    claims: {
-      type: 'array',
-      items: {
-        type: 'object', additionalProperties: false,
-        required: ['id', 'claim', 'verdict', 'evidence'],
+    claims: { type: 'array', items: {
+        type: 'object', additionalProperties: false, required: ['id', 'claim', 'verdict', 'evidence'],
         properties: {
           id:       { type: 'string', description: '斷言清單的 id；清單外自行補的用 new-1、new-2…' },
           claim:    { type: 'string', description: '產出物中一個可查證的事實斷言' },
@@ -59,8 +56,7 @@ const CLAIM_SCHEMA = {
           evidence: { type: 'string', description: 'file:line 或指令輸出；unverifiable 說明為何查不到' },
           severity: { enum: ['fatal', 'major', 'minor'] },
         },
-      },
-    },
+    } },
     gaps: { type: 'array', items: { type: 'string', description: '需求有、產出物沒覆蓋的點' } },
   },
 }
@@ -68,18 +64,14 @@ const CLAIM_SCHEMA = {
 const REFUTE_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['rulings'],
   properties: {
-    rulings: {
-      type: 'array',
-      items: {
-        type: 'object', additionalProperties: false,
-        required: ['id', 'stands', 'reason'],
+    rulings: { type: 'array', items: {
+        type: 'object', additionalProperties: false, required: ['id', 'stands', 'reason'],
         properties: {
           id:     { type: 'string' },
           stands: { type: 'boolean', description: '嘗試反駁後，此斷言是否仍成立' },
           reason: { type: 'string', description: '反駁證據或為何無法推翻' },
         },
-      },
-    },
+    } },
     extraGaps: { type: 'array', items: { type: 'string' } },
   },
 }
@@ -101,16 +93,20 @@ ${claims.map(c => `${c.id}. ${c.claim}`).join('\n')}
 - false：已用工具確認為假（這是幻覺，evidence 說明真相）
 - unverifiable：無法用工具查（evidence 說明為何）
 另列 gaps：需求要求、但產出物沒做到的點。盲審，不要臆測其他 reviewer 的結論。`
+const codexPrompt = `你是轉送員，不自己查證。把 <prompt> 內原文寫進暫存檔 $P，在 repo 根目錄跑：
+codex exec -s read-only --skip-git-repo-check -o "$OUT" - < "$P"
+讀 $OUT，把 codex 對每條斷言的結論原樣填進 schema。codex 失敗、逾時或 $OUT 為空 → 每條 verdict 設 unverifiable，evidence 寫「codex 未產出：<錯誤訊息>」；這件事一定要出現在回報裡。
+<prompt>
+${groundPrompt}
+</prompt>`
 
 phase('R1-Ground')
 const r1 = (await parallel([
   () => agent(groundPrompt, { label: 'ground:opus',   phase: 'R1-Ground', model: 'opus',   schema: CLAIM_SCHEMA }),
-  () => agent(groundPrompt, { label: 'ground:sonnet', phase: 'R1-Ground', model: 'sonnet', schema: CLAIM_SCHEMA }),
+  () => agent(codexPrompt,  { label: 'ground:codex',  phase: 'R1-Ground', model: 'sonnet', schema: CLAIM_SCHEMA }),
 ])).filter(Boolean)
-  // 兩邊各自補的 new-1 是不同斷言，加 reviewer 前綴避免撞號
   .map((r, i) => ({ ...r, claims: r.claims.map(c => c.id.startsWith('new-') ? { ...c, id: `r${i}-${c.id}` } : c) }))
 
-// 存活斷言 = 沒有任何接地員判 false 的（要拿去對抗反駁）
 const text = new Map([...claims.map(c => [c.id, c.claim]), ...r1.flatMap(r => r.claims.map(c => [c.id, c.claim]))])
 const falseIds = new Set(r1.flatMap(r => r.claims.filter(c => c.verdict === 'false').map(c => c.id)))
 const surviving = [...text.keys()].filter(id => !falseIds.has(id))
@@ -156,5 +152,5 @@ return { r1, r2, surviving, falseIds: [...falseIds] }
 ## 守則
 
 - **不自動改 code**——只產清單，用戶拍板。
-- **模型分工**：對錯判斷用 opus/sonnet 互審（已內建）；不要用弱模型審核心判斷。
+- **模型分工**：R1 是 opus 與 codex 兩家互審，盲點才不重疊；codex 只能以 `-s read-only` 跑。codex 那票是 unverifiable 時，回報裡明說「本輪只有單一廠商接地」。
 - REJECTED 必留計數，讓用戶看得到 reviewer 是否在亂報。
